@@ -11,7 +11,7 @@ namespace ProjectPortfolio.Paths
         private const int MAX_COMPUTE_ITERATIONS = 10_000;
 
         private readonly Action<Pathfinder> _releaseCallback;
-        private readonly PathfinderGrid _grid;
+        internal readonly PathfinderGrid _grid;
         private readonly PathfinderQueue _queue;
         
         private readonly PathfinderNode _destinationNode;
@@ -21,6 +21,8 @@ namespace ProjectPortfolio.Paths
         private readonly List<Vector2> _path = new();
 
         public IReadOnlyList<Vector2> Path => _path;
+
+        internal List<PathfinderNode> PrevUpdatedNodes = new();
 
         internal Pathfinder(Vector3 p_destination, PathfinderGrid p_grid, Action<Pathfinder> p_releaseCallback)
         {
@@ -60,10 +62,43 @@ namespace ProjectPortfolio.Paths
                 Debug.LogError("New start position is invalid.");
                 return;
             }
+            
+            if (_startNode != null && _startNode != newStartNode)
+            {
+                _km += CalculateOctileHeuristic(_startNode, newStartNode);
+            }
 
             _startNode = newStartNode;
 
             Initialize();
+            CalculatePath();
+            ParsePath();
+        }
+
+        internal void UpdateNodes(List<GridNode> p_changedGridNodes)
+        {
+            _destinationNode.Rhs = 0f;
+            PrevUpdatedNodes.Clear();
+            
+            foreach (GridNode changedGridNode in p_changedGridNodes)
+            {
+                var changed = _grid.GetNode(changedGridNode);
+                changed.G = float.MaxValue;
+                changed.Rhs = float.MaxValue;
+                
+                foreach (GridNode gridNode in changedGridNode.Neighbours.Concat(new[] { changedGridNode }))
+                {
+                    var node = _grid.GetNode(gridNode);
+
+                    if (_startNode != node)
+                    {
+                        UpdateNodeRhs(node);
+                    }
+                    
+                    UpdateNode(node);
+                }
+            }
+
             CalculatePath();
             ParsePath();
         }
@@ -76,12 +111,13 @@ namespace ProjectPortfolio.Paths
             {
                 if (iterations++ >= MAX_COMPUTE_ITERATIONS)
                 {
+                    _queue.Clear();
                     Debug.LogError("Max iterations exceeded");
                     break;
                 }
 
                 if (_queue.IsEmpty
-                    || (_queue.First.Key > CalculateKey(_queue.First) && _startNode.Rhs < _startNode.G))
+                    || (_queue.First.Key > CalculateKey(_startNode) && _startNode.Rhs <= _startNode.G))
                 {
                     _startNode.G = _startNode.Rhs;
                     break;
@@ -89,6 +125,7 @@ namespace ProjectPortfolio.Paths
 
                 PathfinderNode currentNode = _queue.Dequeue();
                 var currentNodeNewKey = CalculateKey(currentNode);
+                PrevUpdatedNodes.Add(currentNode);
 
                 if (currentNode.Key < currentNodeNewKey)
                 {
@@ -99,15 +136,11 @@ namespace ProjectPortfolio.Paths
                 if (currentNode.G > currentNode.Rhs)
                 {
                     currentNode.G = currentNode.Rhs;
+                    UpdateNodeNeighboursRhs(currentNode);
 
                     foreach (PathfinderNode neighbour in currentNode.Neighbours)
-                    {
-                        if (neighbour != _destinationNode)
-                        {
-                            neighbour.Rhs = Mathf.Min(neighbour.Rhs, currentNode.G + CalculateCost(neighbour, currentNode));
-                        }
                         UpdateNode(neighbour);
-                    }
+                    
                     continue;
                 }
 
@@ -116,27 +149,39 @@ namespace ProjectPortfolio.Paths
 
                 foreach (PathfinderNode neighbour in currentNode.Neighbours.Concat(new[] { currentNode }))
                 {
-                    if (!neighbour.Rhs.IsApprox(oldNodeG + CalculateCost(neighbour, currentNode)))
+                    if (neighbour.Rhs.IsApprox(oldNodeG + CalculateCost(neighbour, currentNode)))
                     {
-                        UpdateNode(neighbour);
-                        continue;
+                        UpdateNodeRhs(neighbour);
                     }
 
-                    if (neighbour != _destinationNode)
-                    {
-                        neighbour.Rhs = float.MaxValue;
-                    }
-
-                    foreach (PathfinderNode secondNeighbour in neighbour.Neighbours)
-                    {
-                        neighbour.Rhs = Mathf.Min(neighbour.Rhs, CalculateCost(neighbour, secondNeighbour) + secondNeighbour.G);
-                    }
-                    
                     UpdateNode(neighbour);
                 }
             }
         }
-        
+
+        private void UpdateNodeRhs(PathfinderNode p_node)
+        {
+            if (p_node != _destinationNode)
+            {
+                p_node.Rhs = float.MaxValue;
+            }
+            
+            foreach (PathfinderNode neighbour in p_node.Neighbours)
+            {
+                p_node.Rhs = Mathf.Min(p_node.Rhs, CalculateCost(p_node, neighbour) + neighbour.G);
+            }
+        }
+
+        private void UpdateNodeNeighboursRhs(PathfinderNode p_node)
+        {
+            foreach (PathfinderNode neighbour in p_node.Neighbours)
+            {
+                if (neighbour != _destinationNode)
+                {
+                    neighbour.Rhs = Mathf.Min(neighbour.Rhs, CalculateCost(p_node, neighbour) + p_node.G);
+                }
+            }
+        }
 
         private void ParsePath()
         {
@@ -163,9 +208,9 @@ namespace ProjectPortfolio.Paths
 
                 foreach (PathfinderNode neighbour in currentNode.Neighbours)
                 {
-                    if (neighbour.G < minCost)
+                    if (Mathf.Min(neighbour.G, neighbour.Rhs) < minCost)
                     {
-                        minCost = neighbour.G;
+                        minCost = Mathf.Min(neighbour.G, neighbour.Rhs);
                         bestNeighbour = neighbour;
                     }
                 }
@@ -181,7 +226,6 @@ namespace ProjectPortfolio.Paths
 
             _path.Add(_destinationNode.GridNode.WorldPosition);
         }
-
 
         private void UpdateNode(PathfinderNode p_node)
         {
@@ -213,6 +257,11 @@ namespace ProjectPortfolio.Paths
 
         private float CalculateOctileHeuristic(PathfinderNode p_node, PathfinderNode p_target)
         {
+            if (p_node.GridNode.IsBlocked || p_target.GridNode.IsBlocked)
+            {
+                return float.PositiveInfinity;
+            }
+            
             Vector2Int delta = (p_node.GridNode.Position - p_target.GridNode.Position).Abs();
 
             return Mathf.Max(delta.x, delta.y) * 0.41f + Mathf.Min(delta.x, delta.y);
@@ -220,6 +269,11 @@ namespace ProjectPortfolio.Paths
 
         private float CalculateCost(PathfinderNode p_node, PathfinderNode p_target)
         {
+            if (p_node.GridNode.IsBlocked || p_target.GridNode.IsBlocked)
+            {
+                return float.PositiveInfinity;
+            }
+            
             return Vector2Int.Distance(p_node.GridNode.Position, p_target.GridNode.Position);
         }
     }

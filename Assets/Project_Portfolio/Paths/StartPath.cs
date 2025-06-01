@@ -17,6 +17,7 @@ namespace ProjectPortfolio.Paths
         {
             var manager = FindAnyObjectByType<PathsManager>();
             _pathfinder = manager.CreatePathfinder(transform.position);
+            _pathfinder.ResetStartNode(Target.transform.position);
         }
 
         private void OnDestroy()
@@ -27,7 +28,7 @@ namespace ProjectPortfolio.Paths
 
         private void Update()
         {
-            _pathfinder.ResetStartNode(Target.transform.position);
+            // _pathfinder.ResetStartNode(Target.transform.position);
         }
 
         private void OnDrawGizmos()

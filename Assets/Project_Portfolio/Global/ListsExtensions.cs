@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Project_Portfolio.Global
+namespace ProjectPortfolio.Global
 {
     public static class ListsExtensions
     {

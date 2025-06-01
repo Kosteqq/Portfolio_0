@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Project_Portfolio.Global;
+using ProjectPortfolio.Global;
 
 namespace ProjectPortfolio.Paths
 {

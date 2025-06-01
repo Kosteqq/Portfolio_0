@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using ProjectPortfolio.Global;
 using UnityEngine;
 
@@ -31,6 +32,11 @@ namespace ProjectPortfolio.Paths
                     node.Neighbours[i] = _nodes[neighbourIndex];
                 }
             }
+        }
+        
+        public PathfinderNode GetNode(GridNode p_gridNode)
+        {
+            return _nodes[GridExtensions.PositionToIndex(p_gridNode.Position, _gridSize)];
         }
         
         public PathfinderNode GetNode(Vector3 p_worldPosition)
