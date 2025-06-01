@@ -1,114 +1,79 @@
-using Project_Portfolio.Global;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace ProjectPortfolio.Paths
 {
-    public struct Tile
-    {
-        public UShortVector2 Position;
-    }
-    public struct Chunk
-    {
-        public UShortVector2 Position;
-    }
-    
     public class PathsManager : MonoBehaviour
     {
-        [SerializeField] private float _tileWorldSize;
-        [SerializeField] private uint _chunkTilesCount;
-        [SerializeField] private uint _chunksCount;
-
-        private Tile[] _tiles;
-        private float _chunkWorldSize => _chunkTilesCount * _tileWorldSize;
-        private uint _tilesInChunk => _chunkTilesCount * _chunkTilesCount;
-
-
+        [SerializeField] private float _nodeSize;
+        [SerializeField] private int _gridSize;
+        
+        private readonly List<GridNode> _nodes = new();
+        private readonly List<Pathfinder> _pathfinders = new();
+        
         private void Awake()
         {
-            _tiles = new Tile[(int)Mathf.Pow(_chunksCount * _chunkTilesCount, 2)];
+            InitializeGrid();
+        }
 
-            for (ushort chunkY = 0; chunkY < _chunksCount; chunkY++)
+        public Pathfinder CreatePathfinder(Vector3 p_worldDestinationPos)
+        {
+            var grid = new PathfinderGrid(_nodes, _gridSize, _nodeSize);
+            var pathfinder = new Pathfinder(p_worldDestinationPos, grid, ReleasedPathfinder);
+            return pathfinder;
+        }
+
+        private void ReleasedPathfinder(Pathfinder p_releasedPathfinder)
+        {
+            _pathfinders.Remove(p_releasedPathfinder);
+        }
+
+        private void InitializeGrid()
+        {
+            for (int y = 0; y < _gridSize; y++)
             {
-                for (ushort chunkX = 0; chunkX < _chunksCount; chunkX++)
+                for (int x = 0; x < _gridSize; x++)
                 {
-                    for (ushort y = 0; y < _chunkTilesCount; y++)
-                    {
-                        for (ushort x = 0; x < _chunkTilesCount; x++)
-                        {
-                            var position = new UShortVector2
-                            {
-                                X = (ushort)(chunkX * _chunkTilesCount + x),
-                                Y = (ushort)(chunkY * _chunkTilesCount + y),
-                            };
-
-                            uint index = GetTileIndex(position);
-                            
-                            _tiles[index] = new Tile
-                            {
-                                Position = position,
-                            };
-                        }   
-                    }
+                    _nodes.Add(new GridNode(
+                        new Vector2Int(x, y),
+                        new Vector2(x * _nodeSize, y * _nodeSize)));
                 }
             }
-        }
-
-        public Tile GetTile(Vector2 p_worldPosition)
-        {
-            UShortVector2 tilePosition = WorldToTilePosition(p_worldPosition);
-            uint tileIndex = GetTileIndex(tilePosition);
-            return _tiles[tileIndex];
-        }
-
-        public Tile GetTile(UShortVector2 p_tilePosition)
-        {
-            uint tileIndex = GetTileIndex(p_tilePosition);
-            return _tiles[tileIndex];
-        }
-
-        public uint GetTileIndex(UShortVector2 p_tilePosition)
-        {
-            UShortVector2 chunk = p_tilePosition / _chunkTilesCount;
-            UShortVector2 padding = p_tilePosition % _chunkTilesCount;
-
-            uint chunksOffset = chunk.Y * _chunksCount + chunk.X;
-            uint chunkPadding = padding.Y * _chunkTilesCount + padding.X;
             
-            return chunksOffset * _tilesInChunk + chunkPadding;
-        }
-
-        public Bounds GetTileWorldBounds(in Tile p_tile)
-        {
-            Bounds bounds = new();
-            Vector3 min = new Vector3(p_tile.Position.X * _tileWorldSize, 0f, p_tile.Position.Y * _tileWorldSize);
-            
-            bounds.SetMinMax(min, min + new Vector3(_tileWorldSize, 0f, _tileWorldSize));
-            return bounds;
-        }
-
-        private UShortVector2 WorldToTilePosition(Vector2 p_worldPosition)
-        {
-            Assert.IsTrue(p_worldPosition.x >= 0 && p_worldPosition.y >= 0, "Negative grid values are not supported");
-
-            return new UShortVector2
+            for (var tileIndex = 0; tileIndex < _nodes.Count; tileIndex++)
             {
-                X = (ushort)Mathf.FloorToInt(p_worldPosition.x / _tileWorldSize),
-                Y = (ushort)Mathf.FloorToInt(p_worldPosition.y / _tileWorldSize),
-            };
+                var gridTile = _nodes[tileIndex];
+                
+                if (gridTile.Position.x > 0)
+                    _nodes[tileIndex].Neighbours.Add(_nodes[tileIndex - 1]);
+                if (gridTile.Position.x < _gridSize - 1)
+                    _nodes[tileIndex].Neighbours.Add(_nodes[tileIndex + 1]);
+                
+                if (gridTile.Position.y > 0)
+                    _nodes[tileIndex].Neighbours.Add(_nodes[tileIndex - _gridSize]);
+                if (gridTile.Position.y < _gridSize - 1)
+                    _nodes[tileIndex].Neighbours.Add(_nodes[tileIndex + _gridSize]);
+                
+                if (gridTile.Position.x > 0 && gridTile.Position.y > 0)
+                    _nodes[tileIndex].Neighbours.Add(_nodes[tileIndex - _gridSize - 1]);
+                if (gridTile.Position.x > 0 && gridTile.Position.y < _gridSize - 1)
+                    _nodes[tileIndex].Neighbours.Add(_nodes[tileIndex + _gridSize - 1]);
+                if (gridTile.Position.x < _gridSize - 1 && gridTile.Position.y > 0)
+                    _nodes[tileIndex].Neighbours.Add(_nodes[tileIndex - _gridSize + 1]);
+                if (gridTile.Position.x < _gridSize - 1 && gridTile.Position.y < _gridSize - 1)
+                    _nodes[tileIndex].Neighbours.Add(_nodes[tileIndex + _gridSize + 1]);
+            }
         }
 
         private void OnDrawGizmos()
         {
-            for (int y = 0; y < _chunksCount; y++)
+            for (int y = 0; y < _gridSize; y++)
             {
-                for (int x = 0; x < _chunksCount; x++)
+                for (int x = 0; x < _gridSize; x++)
                 {
-                    Gizmos.color = Color.yellow;
-                    Gizmos.DrawWireCube(
-                        new Vector3((x + 0.5f) * _chunkWorldSize, 0f, (y + 0.5f) * _chunkWorldSize),
-                        new Vector3(_chunkWorldSize, 0f, _chunkWorldSize));
-                }   
+                    Gizmos.DrawWireCube(new Vector3(x, 0f, y) * _nodeSize + new Vector3(_nodeSize / 2f, 0f, _nodeSize / 2f),
+                        new Vector3(_nodeSize, 0f, _nodeSize));
+                }
             }
         }
     }
