@@ -11,27 +11,30 @@ namespace ProjectPortfolio.Paths
         private const int MAX_COMPUTE_ITERATIONS = 10_000;
 
         private readonly Action<Pathfinder> _releaseCallback;
+        private readonly Func<Vector2> _getPositionFunc;
         internal readonly PathfinderGrid _grid;
         private readonly PathfinderQueue _queue;
         
-        private readonly PathfinderNode _destinationNode;
+        private PathfinderNode _destinationNode;
         private PathfinderNode _startNode;
         private float _km = 0f;
 
-        private readonly List<Vector2> _path = new();
-
-        public IReadOnlyList<Vector2> Path => _path;
+        private readonly List<Vector2> _path;
 
         internal List<PathfinderNode> PrevUpdatedNodes = new();
 
-        internal Pathfinder(Vector3 p_destination, PathfinderGrid p_grid, Action<Pathfinder> p_releaseCallback)
+        internal Pathfinder(List<Vector2> p_path, Func<Vector2> p_getPositionFunc, PathfinderGrid p_grid, Action<Pathfinder> p_releaseCallback)
         {
+            _path = p_path;
             _grid = p_grid;
+            _getPositionFunc = p_getPositionFunc;
             _releaseCallback = p_releaseCallback;
-            _destinationNode = p_grid.GetNode(p_destination);
-            _destinationNode.Rhs = 0f;
+            _startNode = p_grid.GetNode(_getPositionFunc());
+            _destinationNode = _startNode;
 
             _queue = new PathfinderQueue();
+            
+            Initialize();
         }
 
         public void Release()
@@ -53,32 +56,41 @@ namespace ProjectPortfolio.Paths
             _queue.Enqueue(_destinationNode, CalculateKey(_destinationNode));
         }
         
-        public void ResetStartNode(Vector3 p_startPosition)
+        public void SetDestinationPosition(Vector2 p_worldPosition)
         {
-            PathfinderNode newStartNode = _grid.GetNode(p_startPosition);
+            PathfinderNode newDestination = _grid.GetNode(p_worldPosition);
 
-            if (newStartNode == null)
+            if (newDestination == null)
             {
-                Debug.LogError("New start position is invalid.");
+                Debug.LogError("New destination position is invalid.");
+                return;
+            }
+
+            if (_destinationNode == newDestination)
+            {
                 return;
             }
             
-            if (_startNode != null && _startNode != newStartNode)
-            {
-                _km += CalculateOctileHeuristic(_startNode, newStartNode);
-            }
-
-            _startNode = newStartNode;
-
+            PrevUpdatedNodes.Clear();
+            _destinationNode = newDestination;
             Initialize();
             CalculatePath();
             ParsePath();
+        }
+
+        private void RefreshStartNode()
+        {
+            PathfinderNode newStartNode = _grid.GetNode(_getPositionFunc());
+            _km += CalculateOctileHeuristic(_startNode, newStartNode);
+            _startNode = newStartNode;
         }
 
         internal void UpdateNodes(List<GridNode> p_changedGridNodes)
         {
             _destinationNode.Rhs = 0f;
             PrevUpdatedNodes.Clear();
+
+            RefreshStartNode();
             
             foreach (GridNode changedGridNode in p_changedGridNodes)
             {

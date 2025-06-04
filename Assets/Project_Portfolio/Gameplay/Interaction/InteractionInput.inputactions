@@ -1,12 +1,12 @@
 {
-    "name": "Input",
+    "name": "InteractionInput",
     "maps": [
         {
-            "name": "Gameplay",
+            "name": "UnitsManagement",
             "id": "1d31edd1-ff85-4f72-9f6e-6f6cf9afd65e",
             "actions": [
                 {
-                    "name": "LMB",
+                    "name": "SetPosition",
                     "type": "Button",
                     "id": "202e5b78-ca5c-4429-85ca-31b7b85f93ef",
                     "expectedControlType": "",
@@ -23,7 +23,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "LMB",
+                    "action": "SetPosition",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -20,10 +20,10 @@ namespace ProjectPortfolio.Paths
             InitializeGrid();
         }
 
-        public Pathfinder CreatePathfinder(Vector3 p_worldDestinationPos)
+        public Pathfinder CreatePathfinder(List<Vector2> p_path, Func<Vector2> p_getPositionFunc)
         {
             var grid = new PathfinderGrid(_nodes, _gridSize, _nodeSize);
-            var pathfinder = new Pathfinder(p_worldDestinationPos, grid, ReleasedPathfinder);
+            var pathfinder = new Pathfinder(p_path, p_getPositionFunc, grid, ReleasedPathfinder);
             _pathfinders.Add(pathfinder);
             return pathfinder;
         }

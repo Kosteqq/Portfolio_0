@@ -41,7 +41,12 @@ namespace ProjectPortfolio.Paths
         
         public PathfinderNode GetNode(Vector3 p_worldPosition)
         {
-            Vector2Int gridPosition = (p_worldPosition.GetXZ() / _nodeSize).Floor();
+            return GetNode(p_worldPosition.GetXZ());
+        }
+        
+        public PathfinderNode GetNode(Vector2 p_worldPosition)
+        {
+            Vector2Int gridPosition = (p_worldPosition / _nodeSize).Floor();
             return _nodes[GridExtensions.PositionToIndex(gridPosition, _gridSize)];
         }
     }
