@@ -10,7 +10,9 @@ namespace ProjectPortfolio.Paths
         private readonly PathfinderNode[] _nodes;
         private readonly int _gridSize;
         private readonly float _nodeSize;
-        internal PathfinderNode[] Nodes => _nodes;
+
+        public float NodeSize => _nodeSize;
+        public PathfinderNode[] Nodes => _nodes;
 
         public PathfinderGrid(IReadOnlyList<GridNode> p_systemNodes, int p_gridSize, float p_nodeSize)
         {

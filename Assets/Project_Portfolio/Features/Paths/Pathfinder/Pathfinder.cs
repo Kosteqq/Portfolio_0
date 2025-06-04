@@ -71,8 +71,10 @@ namespace ProjectPortfolio.Paths
                 return;
             }
             
-            PrevUpdatedNodes.Clear();
             _destinationNode = newDestination;
+            _startNode = _grid.GetNode(_getPositionFunc());
+            
+            PrevUpdatedNodes.Clear();
             Initialize();
             CalculatePath();
             ParsePath();
@@ -195,12 +197,19 @@ namespace ProjectPortfolio.Paths
             }
         }
 
+        #region Parse Path
+
         private void ParsePath()
         {
             _path.Clear();
+
             PathfinderNode currentNode = _startNode;
             int iterations = 0;
+            Vector2 prevDirection = Vector2.zero;
+            
+            Vector2 offset = new Vector2(_grid.NodeSize / 2f, _grid.NodeSize / 2f);
 
+            // Intentionally skipping the first node (start node) to prevent from moving back to its initial position
             while (true)
             {
                 if (iterations++ >= MAX_COMPUTE_ITERATIONS)
@@ -209,23 +218,7 @@ namespace ProjectPortfolio.Paths
                     break;
                 }
                 
-                if (currentNode == _destinationNode)
-                {
-                    break;
-                }
-                
-                _path.Add(currentNode.GridNode.WorldPosition);
-                PathfinderNode bestNeighbour = null;
-                float minCost = float.MaxValue;
-
-                foreach (PathfinderNode neighbour in currentNode.Neighbours)
-                {
-                    if (Mathf.Min(neighbour.G, neighbour.Rhs) < minCost)
-                    {
-                        minCost = Mathf.Min(neighbour.G, neighbour.Rhs);
-                        bestNeighbour = neighbour;
-                    }
-                }
+                PathfinderNode bestNeighbour = GetBestNeighbour(currentNode);
 
                 if (bestNeighbour == null)
                 {
@@ -234,9 +227,50 @@ namespace ProjectPortfolio.Paths
                 }
 
                 currentNode = bestNeighbour;
+                InsertOrUpdatePathNode(currentNode, offset, _path, ref prevDirection);
+                
+                if (currentNode == _destinationNode)
+                {
+                    break;
+                }
+            }
+        }
+
+        private static void InsertOrUpdatePathNode(PathfinderNode p_node, Vector2 p_offset,
+            List<Vector2> p_path, ref Vector2 p_prevDirection)
+        {
+            Vector2 newPosition = p_node.GridNode.WorldPosition + p_offset;
+            Vector2 newDirection = (newPosition - p_path.TryGetAt(p_path.Count - 1, newPosition)).normalized;
+            bool canBeReplaced = p_path.Count > 0 && newDirection == p_prevDirection; 
+                
+            if (canBeReplaced)
+            {
+                p_path[^1] = newPosition;
+            }
+            else
+            {
+                p_path.Add(newPosition);
+                p_prevDirection = newDirection;
+            }
+        }
+
+        #endregion
+
+        private PathfinderNode GetBestNeighbour(PathfinderNode p_node)
+        {
+            PathfinderNode bestNeighbour = null;
+            float minCost = float.MaxValue;
+
+            foreach (PathfinderNode neighbour in p_node.Neighbours)
+            {
+                if (Mathf.Min(neighbour.G, neighbour.Rhs) < minCost)
+                {
+                    minCost = Mathf.Min(neighbour.G, neighbour.Rhs);
+                    bestNeighbour = neighbour;
+                }
             }
 
-            _path.Add(_destinationNode.GridNode.WorldPosition);
+            return bestNeighbour;
         }
 
         private void UpdateNode(PathfinderNode p_node)

@@ -44,15 +44,18 @@ namespace ProjectPortfolio.Paths
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.blue;
-            for (int i = 0; i < _path.Count - 1; i++)
+            for (int i = 0; i < _path.Count; i++)
             {
                 Gizmos.DrawCube(_path[i].ToXZ(), Vector3.one);
             }
             
             Gizmos.color = Color.yellow;
-            for (int i = 0; i < _path.Count - 1; i++)
+            for (int i = 0; i < _path.Count; i++)
             {
-                Gizmos.DrawLine(_path[i].ToXZ(), _path[i + 1].ToXZ());
+                if (i == 0)
+                    Gizmos.DrawLine(transform.position, _path[i].ToXZ());
+                else
+                    Gizmos.DrawLine(_path[i - 1].ToXZ(), _path[i].ToXZ());
             }
         }
     }
