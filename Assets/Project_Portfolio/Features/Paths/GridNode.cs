@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ProjectPortfolio.Gameplay.Units;
 using ProjectPortfolio.Global;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace ProjectPortfolio.Paths
     {
         public readonly Vector2Int Position;
         public readonly Vector2 WorldPosition;
-        public readonly Bounds2D WorldBounds;
+        public readonly GridBounds GridBounds;
 
         public bool IsBlocked;
 
@@ -18,7 +19,7 @@ namespace ProjectPortfolio.Paths
         {
             Position = p_position;
             WorldPosition = p_worldPosition;
-            WorldBounds = new Bounds2D(p_worldPosition + p_worldSize / 2f, p_worldSize, 0f);
+            GridBounds = new GridBounds(p_worldPosition + p_worldSize / 2f, p_worldSize, 0f);
         }
     }
 }

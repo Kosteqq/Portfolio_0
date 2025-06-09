@@ -12,8 +12,8 @@ namespace ProjectPortfolio.Paths
     public class PathsObstacleComponent : MonoBehaviour
     {
         [SerializeField] private PathsManager _pathsManager;
-        [SerializeField] private Bounds2D _localBounds;
         private Bounds2D _prevWorldBounds;
+        [SerializeField] private GridBounds _localBounds;
 
         internal Bounds2D PrevBounds => _prevWorldBounds;
         internal Bounds2D Bounds => _localBounds.Transform(transform);
@@ -43,7 +43,7 @@ namespace ProjectPortfolio.Paths
             private void OnSceneGUI()
             {
                 var obstacle = (PathsObstacleComponent)target;
-                ref Bounds2D bounds = ref obstacle._localBounds;
+                ref GridBounds bounds = ref obstacle._localBounds;
 
                 Handles.matrix = obstacle.transform.localToWorldMatrix;
                 Handles.color = Color.green;
@@ -59,7 +59,7 @@ namespace ProjectPortfolio.Paths
                     Handles.color = Color.white;
                     if (node.G < float.MaxValue)
                     {
-                        Handles.Label(node.GridNode.WorldBounds.Center.ToXZ(), Mathf.Min(node.G, node.Rhs).ToString("F1"));
+                        Handles.Label(node.GridNode.GridBounds.Center.ToXZ(), Mathf.Min(node.G, node.Rhs).ToString("F1"));
                     }
                 }
             }

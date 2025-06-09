@@ -11,7 +11,7 @@ namespace ProjectPortfolio.Paths
         private const int MAX_COMPUTE_ITERATIONS = 10_000;
 
         private readonly Action<Pathfinder> _releaseCallback;
-        private readonly Func<Vector2> _getPositionFunc;
+        private readonly Func<UnitPosition> _getPositionFunc;
         internal readonly PathfinderGrid _grid;
         private readonly PathfinderQueue _queue;
         
@@ -23,7 +23,7 @@ namespace ProjectPortfolio.Paths
 
         internal List<PathfinderNode> PrevUpdatedNodes = new();
 
-        internal Pathfinder(List<Vector2> p_path, Func<Vector2> p_getPositionFunc, PathfinderGrid p_grid, Action<Pathfinder> p_releaseCallback)
+        internal Pathfinder(List<Vector2> p_path, Func<UnitPosition> p_getPositionFunc, PathfinderGrid p_grid, Action<Pathfinder> p_releaseCallback)
         {
             _path = p_path;
             _grid = p_grid;

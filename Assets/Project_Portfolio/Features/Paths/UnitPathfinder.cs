@@ -11,17 +11,18 @@ namespace ProjectPortfolio.Paths
 
         public IReadOnlyList<Vector2> PathNodes => _path;
 
+        private PathsManager _manager;
         private Pathfinder _pathfinder;
         
         private void Awake()
         {
-            var manager = FindAnyObjectByType<PathsManager>();
-            _pathfinder = manager.CreatePathfinder(_path, () => transform.position.GetXZ());
+            _manager = FindAnyObjectByType<PathsManager>();
+            _pathfinder = _manager.CreatePathfinder(_path, () => UnitPosition.WorldToLocal(transform.position));
         }
 
-        public void SetTarget(Vector2 p_worldPosition)
+        public void SetTarget(UnitPosition p_position)
         {
-            _pathfinder.SetDestinationPosition(p_worldPosition);
+            _pathfinder.SetDestinationPosition(p_position);
         }
 
         public bool HasNextNode()

@@ -8,13 +8,19 @@ namespace ProjectPortfolio.Gameplay.Units
     [RequireComponent(typeof(IUnitPathDriver))]
     public class Unit : MonoBehaviour
     {
-        public IUnitMovementDriver MovementDriver { get; private set; }
-        public IUnitPathDriver PathDriver { get; private set; }
+        private IUnitMovementDriver _movementDriver;
+        private IUnitPathDriver _pathDriver;
 
         private void Awake()
         {
-            MovementDriver = GetComponent<UnitSimpleMovement>();
-            PathDriver = GetComponent<IUnitPathDriver>();
+            _movementDriver = GetComponent<UnitSimpleMovement>();
+            _pathDriver = GetComponent<IUnitPathDriver>();
+        }
+        
+        public void MoveTo(UnitPosition p_position)
+        {
+            _pathDriver.SetTarget(p_position);
+        }
         }
     }
 }

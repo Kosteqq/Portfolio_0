@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ProjectPortfolio.Global
 {
-    static class Bounds2DExtensions
+    static class GridBoundsExtensions
     {
         private struct Line
         {
@@ -10,12 +10,12 @@ namespace ProjectPortfolio.Global
             public Vector2 Center;
         }
 
-        public static Vector2[] GetCorners(this Bounds2D p_bounds)
+        public static Vector2[] GetCorners(this GridBounds p_bounds)
         {
             return GetSquareCorners(p_bounds.Center, p_bounds.Size, p_bounds.Rotation);
         }
         
-        public static bool IsIntersectWith(this Bounds2D p_bounds, in Bounds2D p_other)
+        public static bool IsIntersectWith(this GridBounds p_bounds, in GridBounds p_other)
         {
             Vector2[] boundsCorners = GetSquareCorners(p_bounds.Center, p_bounds.Size, p_bounds.Rotation);
             Line boundsHorizontalNormalAxis = GetHorizontalNormalAxis(boundsCorners, p_bounds.Center);

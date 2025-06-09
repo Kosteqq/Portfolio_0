@@ -9,7 +9,7 @@ using UnityEditor.IMGUI.Controls;
 namespace ProjectPortfolio.Global
 {
     [Serializable]
-    public struct Bounds2D
+    public struct GridBounds
     {
         public Vector2 Center;
         public Vector2 Size;
@@ -18,7 +18,7 @@ namespace ProjectPortfolio.Global
         public Vector2 Min => GetMin();
         public Vector2 Max => GetMax();
 
-        public Bounds2D(Vector2 p_center, Vector2 p_size, float p_rotation)
+        public GridBounds(Vector2 p_center, Vector2 p_size, float p_rotation)
         {
             Center = p_center;
             Size = p_size;
@@ -29,9 +29,9 @@ namespace ProjectPortfolio.Global
 #endif
         }
 
-        public Bounds2D Transform(Transform p_transform)
+        public GridBounds Transform(Transform p_transform)
         {
-            return new Bounds2D
+            return new GridBounds
             {
                 Center = p_transform.TransformPoint(Center.ToXZ()).GetXZ(),
                 Size = Size,

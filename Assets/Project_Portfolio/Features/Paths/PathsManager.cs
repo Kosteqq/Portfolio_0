@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ProjectPortfolio.Gameplay.Units;
 using ProjectPortfolio.Global;
+using Unity.Collections;
 using UnityEngine;
 
 namespace ProjectPortfolio.Paths
@@ -21,6 +23,7 @@ namespace ProjectPortfolio.Paths
         }
 
         public Pathfinder CreatePathfinder(List<Vector2> p_path, Func<Vector2> p_getPositionFunc)
+        public Pathfinder CreatePathfinder(List<Vector2> p_path, Func<UnitPosition> p_getPositionFunc)
         {
             var grid = new PathfinderGrid(_nodes, _gridSize, _nodeSize);
             var pathfinder = new Pathfinder(p_path, p_getPositionFunc, grid, ReleasedPathfinder);
@@ -98,7 +101,7 @@ namespace ProjectPortfolio.Paths
             UpdatePathfinders(changedNodes);
         }
 
-        private IEnumerable<GridNode> NodesInsideBounds(Bounds2D p_bounds)
+        private IEnumerable<GridNode> NodesInsideBounds(GridBounds p_bounds)
         {
             Vector2Int gridPosition = Vector2Int.FloorToInt(p_bounds.Min / _nodeSize);
             Vector2Int gridMaxPosition = Vector2Int.CeilToInt(p_bounds.Max / _nodeSize);
@@ -109,9 +112,9 @@ namespace ProjectPortfolio.Paths
                 for (int xOffset = 0; xOffset < obstacleSize.x; xOffset++)
                 {
                     Vector2Int nodePosition = gridPosition + new Vector2Int(xOffset, yOffset);
-                    GridNode node = _nodes[nodePosition.y * _gridSize + nodePosition.x];
+                    GridNode node = GetNode(nodePosition);
 
-                    if (node.WorldBounds.IsIntersectWith(p_bounds))
+                    if (node.GridBounds.IsIntersectWith(p_bounds))
                     {
                         yield return node;
                     }
@@ -132,7 +135,7 @@ namespace ProjectPortfolio.Paths
             foreach (GridNode node in _nodes)
             {
                 Gizmos.color = node.IsBlocked ? Color.red : Color.white;
-                Gizmos.DrawWireCube(node.WorldBounds.Center.ToXZ() + new Vector3(0.1f, 0f, 0.1f), node.WorldBounds.Size.ToXZ(1f) - new Vector3(0.2f, 0f, 0.2f));
+                Gizmos.DrawWireCube(node.GridBounds.Center.ToXZ() + new Vector3(0.1f, 0f, 0.1f), node.GridBounds.Size.ToXZ(1f) - new Vector3(0.2f, 0f, 0.2f));
             }
 
             foreach (var pathfinder in _pathfinders)
@@ -142,14 +145,25 @@ namespace ProjectPortfolio.Paths
                 {
                     var updated = pathfinder.PrevUpdatedNodes[index];
                     Gizmos.color = new Color(1f, 0f, 1f) * x * index;
-                    Gizmos.DrawCube(updated.GridNode.WorldBounds.Center.ToXZ() + new Vector3(0.2f, 0f, 0.2f),
-                        updated.GridNode.WorldBounds.Size.ToXZ(1f) - new Vector3(0.4f, 0f, 0.4f));
+                    Gizmos.DrawCube(updated.GridNode.GridBounds.Center.ToXZ() + new Vector3(0.2f, 0f, 0.2f),
+                        updated.GridNode.GridBounds.Size.ToXZ(1f) - new Vector3(0.4f, 0f, 0.4f));
                     
                     Gizmos.color = new Color(1f, 0f, 1f);
-                    Gizmos.DrawWireCube(updated.GridNode.WorldBounds.Center.ToXZ() + new Vector3(0.2f, 0f, 0.2f),
-                        updated.GridNode.WorldBounds.Size.ToXZ(1f) - new Vector3(0.4f, 0f, 0.4f));
+                    Gizmos.DrawWireCube(updated.GridNode.GridBounds.Center.ToXZ() + new Vector3(0.2f, 0f, 0.2f),
+                        updated.GridNode.GridBounds.Size.ToXZ(1f) - new Vector3(0.4f, 0f, 0.4f));
                 }
             }
+        }
+
+
+        private GridNode GetNode(Vector2Int p_position)
+        {
+            return _nodes[p_position.y * _gridSize + p_position.x];
+        }
+
+        private GridNode GetNode(UnitPosition p_position)
+        {
+            return _nodes[p_position.Y * _gridSize + p_position.X];
         }
     }
 }

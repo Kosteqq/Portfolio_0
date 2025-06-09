@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using ProjectPortfolio.Gameplay.Units;
 using ProjectPortfolio.Global;
 using UnityEngine;
 
@@ -41,9 +42,9 @@ namespace ProjectPortfolio.Paths
             return _nodes[GridExtensions.PositionToIndex(p_gridNode.Position, _gridSize)];
         }
         
-        public PathfinderNode GetNode(Vector3 p_worldPosition)
+        public PathfinderNode GetNode(UnitPosition p_position)
         {
-            return GetNode(p_worldPosition.GetXZ());
+            return _nodes[GridExtensions.PositionToIndex(p_position.ToVec2(), _gridSize)];
         }
         
         public PathfinderNode GetNode(Vector2 p_worldPosition)

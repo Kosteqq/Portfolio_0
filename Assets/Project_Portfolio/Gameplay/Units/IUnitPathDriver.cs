@@ -7,7 +7,7 @@ namespace ProjectPortfolio.Gameplay.Units
     {
         IReadOnlyList<Vector2> PathNodes { get; }
 
-        void SetTarget(Vector2 p_worldPosition);
+        void SetTarget(UnitPosition p_position);
         bool HasNextNode();
         Vector2 PeekNextNode();
         Vector2 PopNextNode();
