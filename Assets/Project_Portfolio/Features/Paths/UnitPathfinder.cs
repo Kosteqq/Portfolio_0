@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ProjectPortfolio.Gameplay.Units;
 using ProjectPortfolio.Global;
@@ -10,6 +11,7 @@ namespace ProjectPortfolio.Paths
         private readonly List<Vector2> _path = new(128);
 
         public IReadOnlyList<Vector2> PathNodes => _path;
+        public UnitPosition DestinationPosition => _pathfinder.DestinationPosition;
 
         private PathsManager _manager;
         private Pathfinder _pathfinder;
@@ -20,7 +22,12 @@ namespace ProjectPortfolio.Paths
             _pathfinder = _manager.CreatePathfinder(_path, () => UnitPosition.WorldToLocal(transform.position));
         }
 
-        public void SetTarget(UnitPosition p_position)
+        private void OnDestroy()
+        {
+            _pathfinder.Release();
+        }
+
+        public void SetDestination(UnitPosition p_position)
         {
             _pathfinder.SetDestinationPosition(p_position);
         }
@@ -35,11 +42,24 @@ namespace ProjectPortfolio.Paths
             return _path[0];
         }
 
-        public Vector2 PopNextNode()
+        public void PopNextNode()
         {
-            Vector2 position = _path[0];
             _path.RemoveAt(0);
-            return position;
+        }
+
+        public bool CanSetTarget(UnitPosition p_position)
+        {
+            if (!_manager.IsPositionValid(p_position))
+            {
+                return false;
+            }
+
+            if (!_manager.IsNodeAvailable(p_position))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void OnDrawGizmos()

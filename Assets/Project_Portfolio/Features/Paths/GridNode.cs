@@ -7,7 +7,7 @@ namespace ProjectPortfolio.Paths
 {
     internal class GridNode
     {
-        public readonly Vector2Int Position;
+        public readonly UnitPosition Position;
         public readonly Vector2 WorldPosition;
         public readonly GridBounds GridBounds;
 
@@ -15,11 +15,13 @@ namespace ProjectPortfolio.Paths
 
         public readonly List<GridNode> Neighbours = new();
         
-        public GridNode(Vector2Int p_position, Vector2 p_worldPosition, Vector2 p_worldSize)
+        public GridNode(UnitPosition p_position)
         {
             Position = p_position;
-            WorldPosition = p_worldPosition;
-            GridBounds = new GridBounds(p_worldPosition + p_worldSize / 2f, p_worldSize, 0f);
+            WorldPosition = (Vector2)p_position.ToVec2() * UnitPosition.LOCAL_TO_WORLD;
+
+            Vector2 size = Vector2.one * UnitPosition.LOCAL_TO_WORLD;
+            GridBounds = new GridBounds(WorldPosition + size / 2f, size, 0f);
         }
     }
 }

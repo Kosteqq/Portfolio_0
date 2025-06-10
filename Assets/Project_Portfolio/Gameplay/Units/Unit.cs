@@ -16,11 +16,25 @@ namespace ProjectPortfolio.Gameplay.Units
             _movementDriver = GetComponent<UnitSimpleMovement>();
             _pathDriver = GetComponent<IUnitPathDriver>();
         }
+
+        public UnitPosition GetPosition()
+        {
+            return UnitPosition.WorldToLocal(transform.position);
+        }
+
+        public UnitPosition GetMoveDestination()
+        {
+            return _pathDriver.DestinationPosition;
+        }
         
         public void MoveTo(UnitPosition p_position)
         {
-            _pathDriver.SetTarget(p_position);
+            _pathDriver.SetDestination(p_position);
         }
+        
+        public bool CanMoveTo(UnitPosition p_position)
+        {
+            return _pathDriver.CanSetTarget(p_position);
         }
     }
 }

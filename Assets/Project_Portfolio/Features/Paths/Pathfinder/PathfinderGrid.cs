@@ -31,7 +31,7 @@ namespace ProjectPortfolio.Paths
             {
                 for (int i = 0; i < node.GridNode.Neighbours.Count; i++)
                 {
-                    int neighbourIndex = GridExtensions.PositionToIndex(node.GridNode.Neighbours[i].Position, _gridSize);
+                    int neighbourIndex = GridExtensions.PositionToIndex(node.GridNode.Neighbours[i].Position.ToVec2(), _gridSize);
                     node.Neighbours[i] = _nodes[neighbourIndex];
                 }
             }
@@ -39,7 +39,7 @@ namespace ProjectPortfolio.Paths
         
         public PathfinderNode GetNode(GridNode p_gridNode)
         {
-            return _nodes[GridExtensions.PositionToIndex(p_gridNode.Position, _gridSize)];
+            return _nodes[GridExtensions.PositionToIndex(p_gridNode.Position.ToVec2(), _gridSize)];
         }
         
         public PathfinderNode GetNode(UnitPosition p_position)

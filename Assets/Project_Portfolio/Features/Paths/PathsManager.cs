@@ -10,22 +10,20 @@ namespace ProjectPortfolio.Paths
 {
     public class PathsManager : MonoBehaviour
     {
-        [SerializeField] private float _nodeSize;
         [SerializeField] private int _gridSize;
-        
+
+        private bool _initialized;
         private readonly List<GridNode> _nodes = new();
         public readonly List<Pathfinder> _pathfinders = new();
-        private readonly List<PathsObstacleComponent> _obstacles = new();
 
-        private void Awake()
-        {
-            InitializeGrid();
-        }
+        private readonly List<Obstacle> _obstacles = new(256);
 
-        public Pathfinder CreatePathfinder(List<Vector2> p_path, Func<Vector2> p_getPositionFunc)
         public Pathfinder CreatePathfinder(List<Vector2> p_path, Func<UnitPosition> p_getPositionFunc)
         {
-            var grid = new PathfinderGrid(_nodes, _gridSize, _nodeSize);
+            if (!_initialized)
+                InitializeGrid();
+            
+            var grid = new PathfinderGrid(_nodes, _gridSize, UnitPosition.LOCAL_TO_WORLD);
             var pathfinder = new Pathfinder(p_path, p_getPositionFunc, grid, ReleasedPathfinder);
             _pathfinders.Add(pathfinder);
             return pathfinder;
@@ -38,14 +36,12 @@ namespace ProjectPortfolio.Paths
 
         private void InitializeGrid()
         {
+            _initialized = true;
             for (int y = 0; y < _gridSize; y++)
             {
                 for (int x = 0; x < _gridSize; x++)
                 {
-                    _nodes.Add(new GridNode(
-                        new Vector2Int(x, y),
-                        new Vector2(x * _nodeSize, y * _nodeSize),
-                        new Vector2(_nodeSize, _nodeSize)));
+                    _nodes.Add(new GridNode(new UnitPosition(x, y)));
                 }
             }
             
@@ -65,7 +61,7 @@ namespace ProjectPortfolio.Paths
         
         private void AddNodeNeighbour(GridNode p_node, Vector2Int p_direction)
         {
-            Vector2Int nodeGridPosition = p_node.Position + p_direction;
+            Vector2Int nodeGridPosition = p_node.Position.ToVec2() + p_direction;
 
             if (nodeGridPosition.x >= 0
                 && nodeGridPosition.y >= 0
@@ -75,36 +71,71 @@ namespace ProjectPortfolio.Paths
                 p_node.Neighbours.Add(_nodes[nodeGridPosition.y * _gridSize + nodeGridPosition.x]);
             }
         }
-
-        public void RegisterObstacle(PathsObstacleComponent p_obstacle)
-        {
-            _obstacles.Add(p_obstacle);
-            ObstacleUpdated(p_obstacle);
-        }
-
-        public void ObstacleUpdated(PathsObstacleComponent p_updatedObstacle)
+        
+        internal ObstacleHandle CreateObstacle(in GridBounds p_bounds)
         {
             var changedNodes = new List<GridNode>(32);
             
-            foreach (GridNode prevNode in NodesInsideBounds(p_updatedObstacle.PrevBounds))
+            foreach (GridNode node in NodesInsideBounds(p_bounds))
             {
-                prevNode.IsBlocked = _obstacles.Any(obstacle => obstacle != p_updatedObstacle && obstacle.Bounds.IsIntersectWith(prevNode.WorldBounds));
-                changedNodes.Add(prevNode);
-            }
-            
-            foreach (GridNode node in NodesInsideBounds(p_updatedObstacle.Bounds))
-            {
-                node.IsBlocked = true;
-                changedNodes.Add(node);
+                if (!node.IsBlocked)
+                {
+                    node.IsBlocked = true;
+                    changedNodes.Add(node);
+                }
             }
 
+            var newObstacleID = new ObstacleHandle { Index = _obstacles.Count };
+            var newObstacle = new Obstacle(newObstacleID, p_bounds);
+            
+            _obstacles.Add(newObstacle);
+            UpdatePathfinders(changedNodes);
+            
+            return newObstacleID;
+        }
+        
+        internal void DestroyObstacle(ObstacleHandle p_destroyedObstacleHandle)
+        {
+            if (!p_destroyedObstacleHandle.IsValid)
+            {
+                Debug.LogError("Passed handle is no longer valid!");
+                return;
+            }
+            
+            var changedNodes = new List<GridNode>(32);
+
+            Obstacle destroyedObstacle = _obstacles[p_destroyedObstacleHandle.Index];
+            int destroyedIndex = p_destroyedObstacleHandle.Index;
+            p_destroyedObstacleHandle.Index = -1;
+
+            if (destroyedIndex == _obstacles.Count - 1)
+            {
+                _obstacles.RemoveAt(destroyedIndex);
+            }
+            else
+            {
+                _obstacles.RemoveAtSwapBack(destroyedIndex);
+                _obstacles[destroyedIndex].Handle.Index = destroyedIndex; 
+            }
+
+            foreach (GridNode node in NodesInsideBounds(destroyedObstacle.OccupiedBounds))
+            {
+                bool anyIsOccupied = _obstacles.Any(obstacle => obstacle.OccupiedBounds.IsIntersectWith(node.GridBounds));
+                
+                if (!anyIsOccupied)
+                {
+                    node.IsBlocked = false;
+                    changedNodes.Add(node);
+                }
+            }
+            
             UpdatePathfinders(changedNodes);
         }
 
         private IEnumerable<GridNode> NodesInsideBounds(GridBounds p_bounds)
         {
-            Vector2Int gridPosition = Vector2Int.FloorToInt(p_bounds.Min / _nodeSize);
-            Vector2Int gridMaxPosition = Vector2Int.CeilToInt(p_bounds.Max / _nodeSize);
+            Vector2Int gridPosition = Vector2Int.FloorToInt(p_bounds.Min / UnitPosition.LOCAL_TO_WORLD);
+            Vector2Int gridMaxPosition = Vector2Int.CeilToInt(p_bounds.Max / UnitPosition.LOCAL_TO_WORLD);
             Vector2Int obstacleSize = gridMaxPosition - gridPosition;
 
             for (int yOffset = 0; yOffset < obstacleSize.y; yOffset++)
@@ -155,6 +186,10 @@ namespace ProjectPortfolio.Paths
             }
         }
 
+        public bool IsPositionValid(UnitPosition p_position)
+        {
+            return p_position.X < _gridSize && p_position.Y < _gridSize;
+        }
 
         private GridNode GetNode(Vector2Int p_position)
         {
@@ -164,6 +199,11 @@ namespace ProjectPortfolio.Paths
         private GridNode GetNode(UnitPosition p_position)
         {
             return _nodes[p_position.Y * _gridSize + p_position.X];
+        }
+
+        public bool IsNodeAvailable(UnitPosition p_position)
+        {
+            return !GetNode(p_position).IsBlocked;
         }
     }
 }

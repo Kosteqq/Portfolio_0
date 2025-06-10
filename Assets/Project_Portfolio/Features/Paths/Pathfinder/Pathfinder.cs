@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ProjectPortfolio.Gameplay.Units;
 using ProjectPortfolio.Global;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace ProjectPortfolio.Paths
         private readonly Func<UnitPosition> _getPositionFunc;
         internal readonly PathfinderGrid _grid;
         private readonly PathfinderQueue _queue;
-        
+
         private PathfinderNode _destinationNode;
         private PathfinderNode _startNode;
         private float _km = 0f;
@@ -22,6 +23,8 @@ namespace ProjectPortfolio.Paths
         private readonly List<Vector2> _path;
 
         internal List<PathfinderNode> PrevUpdatedNodes = new();
+
+        public UnitPosition DestinationPosition => _destinationNode.GridNode.Position;
 
         internal Pathfinder(List<Vector2> p_path, Func<UnitPosition> p_getPositionFunc, PathfinderGrid p_grid, Action<Pathfinder> p_releaseCallback)
         {
@@ -39,7 +42,7 @@ namespace ProjectPortfolio.Paths
 
         public void Release()
         {
-            _releaseCallback?.Invoke(null);
+            _releaseCallback?.Invoke(this);
         }
 
         private void Initialize()
@@ -56,9 +59,9 @@ namespace ProjectPortfolio.Paths
             _queue.Enqueue(_destinationNode, CalculateKey(_destinationNode));
         }
         
-        public void SetDestinationPosition(Vector2 p_worldPosition)
+        public void SetDestinationPosition(UnitPosition p_position)
         {
-            PathfinderNode newDestination = _grid.GetNode(p_worldPosition);
+            PathfinderNode newDestination = _grid.GetNode(p_position);
 
             if (newDestination == null)
             {
@@ -83,7 +86,7 @@ namespace ProjectPortfolio.Paths
         private void RefreshStartNode()
         {
             PathfinderNode newStartNode = _grid.GetNode(_getPositionFunc());
-            _km += CalculateOctileHeuristic(_startNode, newStartNode);
+            _km += CalculateOctileHeuristic(_startNode, newStartNode, true);
             _startNode = newStartNode;
         }
 
@@ -209,6 +212,12 @@ namespace ProjectPortfolio.Paths
             
             Vector2 offset = new Vector2(_grid.NodeSize / 2f, _grid.NodeSize / 2f);
 
+            if (_startNode == _destinationNode)
+            {
+                InsertOrUpdatePathNode(currentNode, offset, _path, ref prevDirection);
+                return;
+            }
+
             // Intentionally skipping the first node (start node) to prevent from moving back to its initial position
             while (true)
             {
@@ -301,14 +310,14 @@ namespace ProjectPortfolio.Paths
             );
         }
 
-        private float CalculateOctileHeuristic(PathfinderNode p_node, PathfinderNode p_target)
+        private float CalculateOctileHeuristic(PathfinderNode p_node, PathfinderNode p_target, bool p_ignoreBlocking = false)
         {
-            if (p_node.GridNode.IsBlocked || p_target.GridNode.IsBlocked)
+            if (!p_ignoreBlocking && (p_node.GridNode.IsBlocked || p_target.GridNode.IsBlocked))
             {
                 return float.PositiveInfinity;
             }
             
-            Vector2Int delta = (p_node.GridNode.Position - p_target.GridNode.Position).Abs();
+            Vector2Int delta = (p_node.GridNode.Position.ToVec2() - p_target.GridNode.Position.ToVec2()).Abs();
 
             return Mathf.Max(delta.x, delta.y) * 0.41f + Mathf.Min(delta.x, delta.y);
         }
@@ -320,7 +329,7 @@ namespace ProjectPortfolio.Paths
                 return float.PositiveInfinity;
             }
             
-            return Vector2Int.Distance(p_node.GridNode.Position, p_target.GridNode.Position);
+            return Vector2Int.Distance(p_node.GridNode.Position.ToVec2(), p_target.GridNode.Position.ToVec2());
         }
     }
 }

@@ -37,17 +37,37 @@ namespace ProjectPortfolio.Gameplay.Interaction
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Selecting"",
+                    ""type"": ""Button"",
+                    ""id"": ""0657af0e-9429-4765-92a2-d56cd8211705"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
                 {
                     ""name"": """",
                     ""id"": ""2eb4fc3d-7355-4b53-a9e7-4ff8b7348d66"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SetPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8d1f5dfb-cfe4-4488-9f6e-7229203157a5"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Selecting"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -59,6 +79,7 @@ namespace ProjectPortfolio.Gameplay.Interaction
             // UnitsManagement
             m_UnitsManagement = asset.FindActionMap("UnitsManagement", throwIfNotFound: true);
             m_UnitsManagement_SetPosition = m_UnitsManagement.FindAction("SetPosition", throwIfNotFound: true);
+            m_UnitsManagement_Selecting = m_UnitsManagement.FindAction("Selecting", throwIfNotFound: true);
         }
 
         ~@InteractionInput()
@@ -126,11 +147,13 @@ namespace ProjectPortfolio.Gameplay.Interaction
         private readonly InputActionMap m_UnitsManagement;
         private List<IUnitsManagementActions> m_UnitsManagementActionsCallbackInterfaces = new List<IUnitsManagementActions>();
         private readonly InputAction m_UnitsManagement_SetPosition;
+        private readonly InputAction m_UnitsManagement_Selecting;
         public struct UnitsManagementActions
         {
             private @InteractionInput m_Wrapper;
             public UnitsManagementActions(@InteractionInput wrapper) { m_Wrapper = wrapper; }
             public InputAction @SetPosition => m_Wrapper.m_UnitsManagement_SetPosition;
+            public InputAction @Selecting => m_Wrapper.m_UnitsManagement_Selecting;
             public InputActionMap Get() { return m_Wrapper.m_UnitsManagement; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -143,6 +166,9 @@ namespace ProjectPortfolio.Gameplay.Interaction
                 @SetPosition.started += instance.OnSetPosition;
                 @SetPosition.performed += instance.OnSetPosition;
                 @SetPosition.canceled += instance.OnSetPosition;
+                @Selecting.started += instance.OnSelecting;
+                @Selecting.performed += instance.OnSelecting;
+                @Selecting.canceled += instance.OnSelecting;
             }
 
             private void UnregisterCallbacks(IUnitsManagementActions instance)
@@ -150,6 +176,9 @@ namespace ProjectPortfolio.Gameplay.Interaction
                 @SetPosition.started -= instance.OnSetPosition;
                 @SetPosition.performed -= instance.OnSetPosition;
                 @SetPosition.canceled -= instance.OnSetPosition;
+                @Selecting.started -= instance.OnSelecting;
+                @Selecting.performed -= instance.OnSelecting;
+                @Selecting.canceled -= instance.OnSelecting;
             }
 
             public void RemoveCallbacks(IUnitsManagementActions instance)
@@ -170,6 +199,7 @@ namespace ProjectPortfolio.Gameplay.Interaction
         public interface IUnitsManagementActions
         {
             void OnSetPosition(InputAction.CallbackContext context);
+            void OnSelecting(InputAction.CallbackContext context);
         }
     }
 }

@@ -6,10 +6,12 @@ namespace ProjectPortfolio.Gameplay.Units
     public interface IUnitPathDriver
     {
         IReadOnlyList<Vector2> PathNodes { get; }
+        UnitPosition DestinationPosition { get; }
 
-        void SetTarget(UnitPosition p_position);
+        void SetDestination(UnitPosition p_position);
         bool HasNextNode();
         Vector2 PeekNextNode();
-        Vector2 PopNextNode();
+        void PopNextNode();
+        bool CanSetTarget(UnitPosition p_position);
     }
 }
