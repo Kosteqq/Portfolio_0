@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace ProjectPortfolio.Gameplay
 {
-    [RequireComponent(typeof(InteractionGameplayComponent))]
+    [RequireComponent(typeof(InteractionGameplay))]
     public class GameplayManager : MonoBehaviour
     {
-        private InteractionGameplayComponent _interactionComponent;
+        private InteractionGameplay _interactionComponent;
 
         private void Awake()
         {
-            _interactionComponent = GetComponent<InteractionGameplayComponent>();
+            _interactionComponent = GetComponent<InteractionGameplay>();
             // _interactionManager.
         }
     }

@@ -4,80 +4,23 @@ using ProjectPortfolio.Gameplay.Units;
 using ProjectPortfolio.Global;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.UI;
 
 namespace ProjectPortfolio.Gameplay.Interaction
 {
-    public class InteractionGameplayComponent : MonoBehaviour
+    public class InteractionGameplay : MonoBehaviour
     {
         const int MAX_SEARCH_RANGE = 5;
         
-        [SerializeField] private Image _selectionImage;
-        
         private InteractionInput _interactionInput;
-
-        private bool _isSelecting;
-        private Vector2 _startSelecting;
-        private Vector2 _endSelecting;
-        private readonly List<Unit> _selectedUnits = new();
+        
+        internal readonly List<Unit> SelectedUnits = new();
+        internal InteractionInput Input => _interactionInput;
         
         private void Awake()
         {
             _interactionInput = new InteractionInput();
             _interactionInput.Enable();
             _interactionInput.UnitsManagement.SetPosition.performed += SetUnitsPosition;
-            _interactionInput.UnitsManagement.Selecting.started += StartSelecting;
-            _interactionInput.UnitsManagement.Selecting.canceled += FinishSelecting;
-            
-            _selectionImage.gameObject.SetActive(false);
-        }
-
-        private void Update()
-        {
-            if (!_isSelecting)
-                return;
-            
-            _endSelecting = Mouse.current.position.value;
-
-            var min = Vector2.Min(_startSelecting, _endSelecting);
-            var max = Vector2.Max(_startSelecting, _endSelecting);
-
-            var trans = (RectTransform)_selectionImage.transform;
-            trans.anchoredPosition = min;
-            trans.sizeDelta = max - min;
-        }
-
-        private void StartSelecting(InputAction.CallbackContext p_context)
-        {
-            _isSelecting = true;
-            _selectionImage.gameObject.SetActive(true);
-            _startSelecting = Mouse.current.position.value;
-        }
-
-        private void FinishSelecting(InputAction.CallbackContext p_context)
-        {
-            _isSelecting = false;
-            _selectionImage.gameObject.SetActive(false);
-            
-            var min = Vector2.Min(_startSelecting, _endSelecting);
-            var max = Vector2.Max(_startSelecting, _endSelecting);
-            var selectionRect = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
-            Unit[] units = FindObjectsByType<Unit>(FindObjectsSortMode.None);
-            
-            _selectedUnits.Clear();
-            foreach (Unit unit in units)
-            {
-                var bounds = unit.GetComponent<InteractionSelectionBounds>();
-                var selection = unit.GetComponentInChildren<DecalProjector>(true);
-
-                selection.gameObject.SetActive(false);
-                if (bounds.IsInSelection(selectionRect))
-                {
-                    selection.gameObject.SetActive(true);
-                    _selectedUnits.Add(unit);
-                }
-            }
         }
 
         private void SetUnitsPosition(InputAction.CallbackContext p_context)
@@ -90,13 +33,13 @@ namespace ProjectPortfolio.Gameplay.Interaction
                 UnitPosition targetUnitPosition = UnitPosition.WorldToLocal(ray.GetPoint(enterDistance));
 
                 Vector2 averagePosition = Vector2.zero;
-                foreach (Unit unit in _selectedUnits)
+                foreach (Unit unit in SelectedUnits)
                 {
                     averagePosition += unit.transform.position.GetXZ();
                 }
-                averagePosition /= _selectedUnits.Count;
+                averagePosition /= SelectedUnits.Count;
 
-                IOrderedEnumerable<Unit> unitsInOrder = _selectedUnits
+                IOrderedEnumerable<Unit> unitsInOrder = SelectedUnits
                     .OrderBy(unit => Vector2.Distance(unit.transform.position.GetXZ(), averagePosition));
 
                 var excludedPositions = new List<UnitPosition>();
