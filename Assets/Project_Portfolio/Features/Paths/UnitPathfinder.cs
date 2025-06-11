@@ -47,6 +47,11 @@ namespace ProjectPortfolio.Paths
             _path.RemoveAt(0);
         }
 
+        public void ClearPath()
+        {
+            _path.Clear();
+        }
+
         public bool CanSetTarget(UnitPosition p_position)
         {
             if (!_manager.IsPositionValid(p_position))

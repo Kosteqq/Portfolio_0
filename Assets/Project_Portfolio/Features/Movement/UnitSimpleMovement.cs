@@ -1,3 +1,4 @@
+using System;
 using ProjectPortfolio.Gameplay.Units;
 using ProjectPortfolio.Global;
 using UnityEngine;
@@ -10,6 +11,9 @@ namespace ProjectPortfolio.Movement
         [SerializeField] private float _speed;
 
         private IUnitPathDriver _pathDriver;
+        private bool _isMoving;
+
+        public event Action OnArrived;
 
         private void Awake()
         {
@@ -20,6 +24,11 @@ namespace ProjectPortfolio.Movement
         {
             if (!_pathDriver.HasNextNode())
             {
+                if (_isMoving)
+                {
+                    _isMoving = false;
+                    OnArrived?.Invoke();
+                }
                 return;
             }
             
@@ -35,7 +44,14 @@ namespace ProjectPortfolio.Movement
                 _pathDriver.PopNextNode();
             }
 
+            _isMoving = true;
             transform.position += (direction * moveDistance).ToXZ();
+        }
+        
+        public bool EnsureStopped()
+        {
+            _pathDriver.ClearPath();
+            return true;
         }
     }
 }

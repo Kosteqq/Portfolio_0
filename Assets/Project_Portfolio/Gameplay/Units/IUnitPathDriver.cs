@@ -12,6 +12,7 @@ namespace ProjectPortfolio.Gameplay.Units
         bool HasNextNode();
         Vector2 PeekNextNode();
         void PopNextNode();
+        void ClearPath();
         bool CanSetTarget(UnitPosition p_position);
     }
 }

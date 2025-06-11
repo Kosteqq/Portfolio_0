@@ -21,6 +21,15 @@ namespace ProjectPortfolio.Gameplay.Interaction
             _interactionInput = new InteractionInput();
             _interactionInput.Enable();
             _interactionInput.UnitsManagement.SetPosition.performed += SetUnitsPosition;
+            _interactionInput.UnitsManagement.ToggleModes.performed += ToggleModes;
+        }
+
+        private void ToggleModes(InputAction.CallbackContext p_obj)
+        {
+            foreach (Unit unit in SelectedUnits)
+            {
+                unit.ToggleMode();
+            }
         }
 
         private void SetUnitsPosition(InputAction.CallbackContext p_context)
@@ -46,6 +55,9 @@ namespace ProjectPortfolio.Gameplay.Interaction
                 
                 foreach (Unit unit in unitsInOrder)
                 {
+                    if (!unit.CanMove())
+                        continue;
+                    
                     UnitPosition? target = GetClosestAvailableTarget(unit, targetUnitPosition, excludedPositions);
                         
                     if (target.HasValue)

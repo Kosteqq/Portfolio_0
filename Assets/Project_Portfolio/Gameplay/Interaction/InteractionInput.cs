@@ -46,6 +46,15 @@ namespace ProjectPortfolio.Gameplay.Interaction
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleModes"",
+                    ""type"": ""Button"",
+                    ""id"": ""dd9f4232-1b50-48a2-b52d-368d2d17c873"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -70,6 +79,17 @@ namespace ProjectPortfolio.Gameplay.Interaction
                     ""action"": ""Selecting"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d49972fb-e68a-457f-9b08-286fd9e4f035"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleModes"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -80,6 +100,7 @@ namespace ProjectPortfolio.Gameplay.Interaction
             m_UnitsManagement = asset.FindActionMap("UnitsManagement", throwIfNotFound: true);
             m_UnitsManagement_SetPosition = m_UnitsManagement.FindAction("SetPosition", throwIfNotFound: true);
             m_UnitsManagement_Selecting = m_UnitsManagement.FindAction("Selecting", throwIfNotFound: true);
+            m_UnitsManagement_ToggleModes = m_UnitsManagement.FindAction("ToggleModes", throwIfNotFound: true);
         }
 
         ~@InteractionInput()
@@ -148,12 +169,14 @@ namespace ProjectPortfolio.Gameplay.Interaction
         private List<IUnitsManagementActions> m_UnitsManagementActionsCallbackInterfaces = new List<IUnitsManagementActions>();
         private readonly InputAction m_UnitsManagement_SetPosition;
         private readonly InputAction m_UnitsManagement_Selecting;
+        private readonly InputAction m_UnitsManagement_ToggleModes;
         public struct UnitsManagementActions
         {
             private @InteractionInput m_Wrapper;
             public UnitsManagementActions(@InteractionInput wrapper) { m_Wrapper = wrapper; }
             public InputAction @SetPosition => m_Wrapper.m_UnitsManagement_SetPosition;
             public InputAction @Selecting => m_Wrapper.m_UnitsManagement_Selecting;
+            public InputAction @ToggleModes => m_Wrapper.m_UnitsManagement_ToggleModes;
             public InputActionMap Get() { return m_Wrapper.m_UnitsManagement; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -169,6 +192,9 @@ namespace ProjectPortfolio.Gameplay.Interaction
                 @Selecting.started += instance.OnSelecting;
                 @Selecting.performed += instance.OnSelecting;
                 @Selecting.canceled += instance.OnSelecting;
+                @ToggleModes.started += instance.OnToggleModes;
+                @ToggleModes.performed += instance.OnToggleModes;
+                @ToggleModes.canceled += instance.OnToggleModes;
             }
 
             private void UnregisterCallbacks(IUnitsManagementActions instance)
@@ -179,6 +205,9 @@ namespace ProjectPortfolio.Gameplay.Interaction
                 @Selecting.started -= instance.OnSelecting;
                 @Selecting.performed -= instance.OnSelecting;
                 @Selecting.canceled -= instance.OnSelecting;
+                @ToggleModes.started -= instance.OnToggleModes;
+                @ToggleModes.performed -= instance.OnToggleModes;
+                @ToggleModes.canceled -= instance.OnToggleModes;
             }
 
             public void RemoveCallbacks(IUnitsManagementActions instance)
@@ -200,6 +229,7 @@ namespace ProjectPortfolio.Gameplay.Interaction
         {
             void OnSetPosition(InputAction.CallbackContext context);
             void OnSelecting(InputAction.CallbackContext context);
+            void OnToggleModes(InputAction.CallbackContext context);
         }
     }
 }
