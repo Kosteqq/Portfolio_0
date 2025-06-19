@@ -9,7 +9,7 @@ namespace ProjectPortfolio.Paths
     {
         public readonly UnitPosition Position;
         public readonly Vector2 WorldPosition;
-        public readonly GridBounds GridBounds;
+        public readonly Bounds2D GridBounds;
 
         public bool IsBlocked;
 
@@ -21,7 +21,7 @@ namespace ProjectPortfolio.Paths
             WorldPosition = (Vector2)p_position.ToVec2() * UnitPosition.LOCAL_TO_WORLD;
 
             Vector2 size = Vector2.one * UnitPosition.LOCAL_TO_WORLD;
-            GridBounds = new GridBounds(WorldPosition + size / 2f, size, 0f);
+            GridBounds = new Bounds2D(WorldPosition + size / 2f, size, 0f);
         }
     }
 }

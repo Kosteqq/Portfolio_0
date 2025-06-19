@@ -9,7 +9,7 @@ using UnityEditor.IMGUI.Controls;
 namespace ProjectPortfolio.Global
 {
     [Serializable]
-    public struct GridBounds
+    public partial struct Bounds2D
     {
         public Vector2 Center;
         public Vector2 Size;
@@ -18,28 +18,28 @@ namespace ProjectPortfolio.Global
         public Vector2 Min => GetMin();
         public Vector2 Max => GetMax();
 
-        public GridBounds(Vector2 p_center, Vector2 p_size, float p_rotation)
+        public Bounds2D(Vector2 p_center, Vector2 p_size, float p_rotation)
         {
             Center = p_center;
             Size = p_size;
             Rotation = p_rotation;
             
 #if UNITY_EDITOR
-            _cachedBoundsHandle = null;
+            _editorCachedBoundsHandle = null;
 #endif
         }
 
-        public GridBounds Transform(Transform p_transform)
+        public readonly Bounds2D Transform(Transform p_transform)
         {
-            return new GridBounds
+            return new Bounds2D
             {
                 Center = p_transform.TransformPoint(Center.ToXZ()).GetXZ(),
-                Size = Size,
+                Size = Size * p_transform.lossyScale.GetXZ(),
                 Rotation = Rotation + p_transform.eulerAngles.y,
             };
         }
 
-        private Vector2 GetMin()
+        private readonly Vector2 GetMin()
         {
             Vector2 min = Vector2.positiveInfinity;
             foreach (Vector2 corner in this.GetCorners())
@@ -50,7 +50,7 @@ namespace ProjectPortfolio.Global
             return min;
         }
 
-        private Vector2 GetMax()
+        private readonly Vector2 GetMax()
         {
             Vector2 max = Vector2.zero;
             foreach (Vector2 corner in this.GetCorners())
@@ -62,33 +62,35 @@ namespace ProjectPortfolio.Global
         }
 
 #if UNITY_EDITOR
-        private BoxBoundsHandle _cachedBoundsHandle;
+        private BoxBoundsHandle _editorCachedBoundsHandle;
         
         public bool DrawEditorHandle(Transform p_parent = null)
         {
-            Handles.matrix = p_parent?.localToWorldMatrix ?? Matrix4x4.identity;
+            Handles.matrix = p_parent != null
+                ? p_parent.localToWorldMatrix 
+                : Matrix4x4.identity;
+            
             Handles.color = Color.green;
 
-            if (_cachedBoundsHandle == null)
+            if (_editorCachedBoundsHandle == null)
             {
-                _cachedBoundsHandle = new BoxBoundsHandle();
-                _cachedBoundsHandle.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Z;
+                _editorCachedBoundsHandle = new BoxBoundsHandle();
+                _editorCachedBoundsHandle.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Z;
             }
             
-            _cachedBoundsHandle.size = Size.ToXZ();
-            _cachedBoundsHandle.center = Center.ToXZ();
-            _cachedBoundsHandle.DrawHandle();
+            _editorCachedBoundsHandle.size = Size.ToXZ();
+            _editorCachedBoundsHandle.center = Center.ToXZ();
+            _editorCachedBoundsHandle.DrawHandle();
 
-            if (_cachedBoundsHandle.center == Center.ToXZ()
-                && _cachedBoundsHandle.size == Size.ToXZ())
+            if (_editorCachedBoundsHandle.center == Center.ToXZ()
+                && _editorCachedBoundsHandle.size == Size.ToXZ())
             {
                 return false;
             }
             
-            Center = _cachedBoundsHandle.center.GetXZ();
-            Size = _cachedBoundsHandle.size.GetXZ();
+            Center = _editorCachedBoundsHandle.center.GetXZ();
+            Size = _editorCachedBoundsHandle.size.GetXZ();
             return true;
-
         }
 #endif
     }

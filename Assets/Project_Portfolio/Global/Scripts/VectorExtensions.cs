@@ -49,6 +49,8 @@ namespace ProjectPortfolio.Global
             return new Vector3Int(Mathf.CeilToInt(p_vector.x), Mathf.CeilToInt(p_vector.y), Mathf.CeilToInt(p_vector.z));
         }
 
+        #region Abs
+
         public static Vector2 Abs(this Vector2 p_vector)
         {
             return new Vector2(Mathf.Abs(p_vector.x), Mathf.Abs(p_vector.y));
@@ -68,5 +70,16 @@ namespace ProjectPortfolio.Global
         {
             return new Vector3Int(Mathf.Abs(p_vector.x), Mathf.Abs(p_vector.y), Mathf.Abs(p_vector.z));
         }
+
+        #endregion
+
+        #region Cross
+
+        public static float Cross(this Vector2 p_vector, Vector2 p_other)
+        {
+            return p_vector.x * p_other.x - p_vector.y * p_other.y;
+        }
+
+        #endregion
     }
 }

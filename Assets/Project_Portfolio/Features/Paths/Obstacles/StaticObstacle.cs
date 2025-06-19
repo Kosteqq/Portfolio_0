@@ -11,7 +11,7 @@ namespace ProjectPortfolio.Paths
     public class StaticObstacle : MonoBehaviour
     {
         [SerializeField] private PathsManager _pathsManager;
-        [SerializeField] private GridBounds _localBounds;
+        [SerializeField] private Bounds2D _localBounds;
         private ObstacleHandle _obstacleHandle; 
 
         private void Start()
@@ -33,7 +33,7 @@ namespace ProjectPortfolio.Paths
             private void OnSceneGUI()
             {
                 var obstacle = (StaticObstacle)target;
-                ref GridBounds bounds = ref obstacle._localBounds;
+                ref Bounds2D bounds = ref obstacle._localBounds;
 
                 Handles.matrix = obstacle.transform.localToWorldMatrix;
                 Handles.color = Color.green;

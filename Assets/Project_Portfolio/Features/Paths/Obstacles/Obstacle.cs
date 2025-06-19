@@ -11,9 +11,9 @@ namespace ProjectPortfolio.Paths
     internal struct Obstacle
     {
         public readonly ObstacleHandle Handle;
-        public readonly GridBounds OccupiedBounds;
+        public readonly Bounds2D OccupiedBounds;
 
-        public Obstacle(ObstacleHandle p_handle, GridBounds p_occupiedBounds)
+        public Obstacle(ObstacleHandle p_handle, Bounds2D p_occupiedBounds)
         {
             Handle = p_handle;
             OccupiedBounds = p_occupiedBounds;

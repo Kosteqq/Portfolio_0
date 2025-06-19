@@ -72,7 +72,7 @@ namespace ProjectPortfolio.Paths
             }
         }
         
-        internal ObstacleHandle CreateObstacle(in GridBounds p_bounds)
+        internal ObstacleHandle CreateObstacle(in Bounds2D p_bounds)
         {
             var changedNodes = new List<GridNode>(32);
             
@@ -132,7 +132,7 @@ namespace ProjectPortfolio.Paths
             UpdatePathfinders(changedNodes);
         }
 
-        private IEnumerable<GridNode> NodesInsideBounds(GridBounds p_bounds)
+        private IEnumerable<GridNode> NodesInsideBounds(Bounds2D p_bounds)
         {
             Vector2Int gridPosition = Vector2Int.FloorToInt(p_bounds.Min / UnitPosition.LOCAL_TO_WORLD);
             Vector2Int gridMaxPosition = Vector2Int.CeilToInt(p_bounds.Max / UnitPosition.LOCAL_TO_WORLD);
