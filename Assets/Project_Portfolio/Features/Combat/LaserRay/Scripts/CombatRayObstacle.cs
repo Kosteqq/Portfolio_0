@@ -11,11 +11,6 @@ namespace ProjectPortfolio.Features.Combat
     {
         [SerializeField] private Bounds2D _hitbox;
 
-        private void Start()
-        {
-            FindAnyObjectByType<CombatLaserController>()._targets.Add(this);
-        }
-
         public bool IsHit(in Ray p_ray, out HitResult p_hit)
         {
             bool isIntersects = _hitbox

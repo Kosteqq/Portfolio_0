@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using ProjectPortfolio.Global;
 using UnityEngine;
@@ -12,8 +11,6 @@ namespace ProjectPortfolio.Features.Combat
 
         private ObjectPool<CombatRayVisualizer> _rayVisualizerPool;
         
-        public readonly List<ICombatRayTarget> _targets = new(128);
-
         private readonly List<(Vector2, Vector2, bool)> _debug = new();
 
         private void Awake()
@@ -42,10 +39,6 @@ namespace ProjectPortfolio.Features.Combat
                 defaultCapacity: 20);
         }
 
-        private void Start()
-        {
-        }
-
         private float _timer;
         private void Update()
         {
@@ -62,11 +55,6 @@ namespace ProjectPortfolio.Features.Combat
             _timer -= Time.deltaTime;
         }
 
-        public void AddTarget(ICombatRayTarget p_target)
-        {
-            _targets.Add(p_target);
-        }
-
         public void ShootRay(in Ray p_ray)
         {
             List<HitHistory> hitHistory = CastRay(p_ray);
@@ -79,9 +67,10 @@ namespace ProjectPortfolio.Features.Combat
             float closestHitDist = float.MaxValue;
             HitResult closestHit = default;
                 
-            foreach (ICombatRayTarget target in _targets)
+            foreach (MonoBehaviour mono in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
             {
-                if (target.IsHit(in p_ray, out HitResult targetHit)
+                if (mono is ICombatRayTarget target
+                    && target.IsHit(in p_ray, out HitResult targetHit)
                     && targetHit.Distance < closestHitDist)
                 {
                     closestHitDist = targetHit.Distance;

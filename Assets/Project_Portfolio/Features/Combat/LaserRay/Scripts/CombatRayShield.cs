@@ -11,11 +11,6 @@ namespace ProjectPortfolio.Features.Combat
     {
         [SerializeField] private float _radius;
 
-        private void Start()
-        {
-            FindAnyObjectByType<CombatLaserController>()._targets.Add(this);
-        }
-
         // source: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html
         public bool IsHit(in Ray p_ray, out HitResult p_hit)
         {
