@@ -1,5 +1,4 @@
 using System;
-using NUnit.Framework;
 using ProjectPortfolio.Gameplay.Units;
 using ProjectPortfolio.Paths;
 using UnityEngine;
@@ -22,18 +21,15 @@ namespace ProjectPortfolio.Features.Combat
 
         public bool IsActive => _targetActivity && _activateTimer.IsApprox(_activateTime);
         public bool IsChanningActivity => _targetActivity ? !_activateTimer.IsApprox(_activateTime) : !_activateTimer.IsApprox(0f);
-        public bool CanMoveUnity => !IsActive && !IsChanningActivity;
+        public bool RequiredSiegeState => true;
 
-        public event Action OnChangedActivity;
+        #region Update
 
         private void Update()
         {
             if (IsChanningActivity)
             {
                 TickChanningActivity();
-
-                if (IsChanningActivity)
-                    OnChangedActivity?.Invoke();
             }
 
             if (IsActive)
@@ -45,18 +41,6 @@ namespace ProjectPortfolio.Features.Combat
             {
                 _forceField.SetActive(IsActive);
             }
-        }
-
-        public bool EnsureEquipmentEnabled()
-        {
-            _targetActivity = true;
-            return IsActive;
-        }
-
-        public bool EnsureEquipmentDisabled()
-        {
-            _targetActivity = false;
-            return _activateTimer == 0f;
         }
 
         private void TickChanningActivity()
@@ -77,6 +61,30 @@ namespace ProjectPortfolio.Features.Combat
                 _head.transform.localPosition.x,
                 Mathf.Lerp(_disabledHeadHeight, _enabledHeadHeight, _activateTimer / _activateTime),
                 _head.transform.localPosition.z);
+        }
+
+        #endregion
+
+        public bool EnsureIsInState(UnitState p_desireState)
+        {
+            if (p_desireState == UnitState.SIEGE)
+            {
+                _targetActivity = true;
+                return IsActive;
+            }
+
+            _targetActivity = false;
+            return _activateTimer == 0f;
+        }
+
+        public bool CanAttack(Vector2 p_targetPosition)
+        {
+            return false;
+        }
+
+        public void Attack(Vector2 p_targetPosition)
+        {
+            
         }
     }
 }

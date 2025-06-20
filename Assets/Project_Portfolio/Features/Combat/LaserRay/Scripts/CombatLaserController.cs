@@ -58,7 +58,9 @@ namespace ProjectPortfolio.Features.Combat
         public void ShootRay(in Ray p_ray)
         {
             List<HitHistory> hitHistory = CastRay(p_ray);
-            _rayVisualizerPool.Get().Setup(in p_ray, hitHistory);
+            
+            var visualizer = _rayVisualizerPool.Get();
+            visualizer.Setup(in p_ray, hitHistory);
         }
 
         private bool CheckRayHit(in Ray p_ray, out HitResult p_hitResult)

@@ -13,7 +13,7 @@ namespace ProjectPortfolio.Gameplay.Interaction
         
         private InteractionInput _interactionInput;
         
-        internal readonly List<Unit> SelectedUnits = new();
+        internal readonly List<PlayerUnit> SelectedUnits = new();
         internal InteractionInput Input => _interactionInput;
         
         private void Awake()
@@ -26,7 +26,7 @@ namespace ProjectPortfolio.Gameplay.Interaction
 
         private void ToggleModes(InputAction.CallbackContext p_obj)
         {
-            foreach (Unit unit in SelectedUnits)
+            foreach (PlayerUnit unit in SelectedUnits)
             {
                 unit.ToggleMode();
             }
@@ -42,18 +42,18 @@ namespace ProjectPortfolio.Gameplay.Interaction
                 UnitPosition targetUnitPosition = UnitPosition.WorldToLocal(ray.GetPoint(enterDistance));
 
                 Vector2 averagePosition = Vector2.zero;
-                foreach (Unit unit in SelectedUnits)
+                foreach (PlayerUnit unit in SelectedUnits)
                 {
                     averagePosition += unit.transform.position.GetXZ();
                 }
                 averagePosition /= SelectedUnits.Count;
 
-                IOrderedEnumerable<Unit> unitsInOrder = SelectedUnits
+                IOrderedEnumerable<PlayerUnit> unitsInOrder = SelectedUnits
                     .OrderBy(unit => Vector2.Distance(unit.transform.position.GetXZ(), averagePosition));
 
                 var excludedPositions = new List<UnitPosition>();
                 
-                foreach (Unit unit in unitsInOrder)
+                foreach (PlayerUnit unit in unitsInOrder)
                 {
                     if (!unit.CanMove())
                         continue;
@@ -69,7 +69,7 @@ namespace ProjectPortfolio.Gameplay.Interaction
             }
         }
 
-        private UnitPosition? GetClosestAvailableTarget(Unit p_unit, UnitPosition p_targetPosition, List<UnitPosition> p_excludedPositions)
+        private UnitPosition? GetClosestAvailableTarget(PlayerUnit p_unit, UnitPosition p_targetPosition, List<UnitPosition> p_excludedPositions)
         {
             int searchRange = Mathf.Min(
                 (p_unit.GetPosition().ToVec2() - p_targetPosition.ToVec2()).sqrMagnitude,

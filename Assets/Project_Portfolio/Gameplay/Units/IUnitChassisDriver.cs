@@ -1,10 +1,7 @@
 namespace ProjectPortfolio.Gameplay.Units
 {
-    public interface IUnitChassisDriver
+    public interface IUnitChassisDriver : IUnitComponent
     {
         bool InStationaryMode { get; }
-        
-        bool EnsureStationaryDisabled();
-        bool EnsureStationaryEnabled();
     }
 }

@@ -1,11 +1,9 @@
-using System;
+using ProjectPortfolio.Gameplay.Units;
 
 namespace ProjectPortfolio.Global
 {
-    public interface IUnitMovementDriver
+    public interface IUnitMovementDriver : IUnitComponent
     {
-        event Action OnArrived;
-        
-        bool EnsureStopped();
+        void Stop();
     }
 }

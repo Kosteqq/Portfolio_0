@@ -27,12 +27,7 @@ namespace ProjectPortfolio.Movement
             }
         }
 
-        public bool EnsureStationaryDisabled()
-        {
-            return true;
-        }
-
-        public bool EnsureStationaryEnabled()
+        public bool EnsureIsInState(UnitState p_desireState)
         {
             return true;
         }

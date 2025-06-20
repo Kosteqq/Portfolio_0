@@ -1,14 +1,12 @@
-using System;
+using UnityEngine;
 
 namespace ProjectPortfolio.Gameplay.Units
 {
-    public interface IUnitEquipmentDriver
+    public interface IUnitEquipmentDriver : IUnitComponent
     {
-        bool CanMoveUnity { get; }
+        bool RequiredSiegeState { get; }
         
-        event Action OnChangedActivity;
-
-        bool EnsureEquipmentEnabled();
-        bool EnsureEquipmentDisabled();
+        bool CanAttack(Vector2 p_targetPosition);
+        void Attack(Vector2 p_targetPosition);
     }
 }

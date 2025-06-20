@@ -60,10 +60,10 @@ namespace ProjectPortfolio.Gameplay.Interaction
 
             Rect selectionRect = GetSelectionRect();
             
-            Unit[] units = FindObjectsByType<Unit>(FindObjectsSortMode.None);
+            PlayerUnit[] units = FindObjectsByType<PlayerUnit>(FindObjectsSortMode.None);
             _interaction.SelectedUnits.Clear();
 
-            foreach (Unit unit in units)
+            foreach (PlayerUnit unit in units)
             {
                 var bounds = unit.GetComponent<InteractionSelectionBounds>();
                 var selection = unit.GetComponentInChildren<DecalProjector>(true);

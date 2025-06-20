@@ -1,4 +1,3 @@
-using System;
 using ProjectPortfolio.Gameplay.Units;
 using ProjectPortfolio.Global;
 using UnityEngine;
@@ -11,9 +10,8 @@ namespace ProjectPortfolio.Movement
         [SerializeField] private float _speed;
 
         private IUnitPathDriver _pathDriver;
+        private bool _canMove;
         private bool _isMoving;
-
-        public event Action OnArrived;
 
         private void Awake()
         {
@@ -27,7 +25,6 @@ namespace ProjectPortfolio.Movement
                 if (_isMoving)
                 {
                     _isMoving = false;
-                    OnArrived?.Invoke();
                 }
                 return;
             }
@@ -47,11 +44,28 @@ namespace ProjectPortfolio.Movement
             _isMoving = true;
             transform.position += (direction * moveDistance).ToXZ();
         }
-        
-        public bool EnsureStopped()
+
+        public bool EnsureIsInState(UnitState p_desireState)
+        {
+            if (p_desireState == UnitState.MOVE)
+            {
+                _canMove = true;
+                return true;
+            }
+
+            if (p_desireState == UnitState.SIEGE)
+            {
+                Stop();
+                return true;
+            }
+            
+            return true;
+        }
+
+        public void Stop()
         {
             _pathDriver.ClearPath();
-            return true;
+            _canMove = false;
         }
     }
 }

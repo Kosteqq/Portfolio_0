@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProjectPortfolio.Gameplay.Units
 {
-    public interface IUnitPathDriver
+    public interface IUnitPathDriver : IUnitComponent
     {
         IReadOnlyList<Vector2> PathNodes { get; }
         UnitPosition DestinationPosition { get; }
