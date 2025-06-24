@@ -100,7 +100,11 @@ namespace ProjectPortfolio.Features.Combat
                 if (!CheckRayHit(in p_ray, out HitResult hitResult))
                 {
                     p_ray.Origin += p_ray.Direction * 1000;
-                    history.Add(new HitHistory { WorldPosition = p_ray.Origin });
+                    history.Add(new HitHistory
+                    {
+                        WorldPosition = p_ray.Origin,
+                        WorldHitNormal = (p_ray.Direction * -1f).normalized,
+                    });
                     break;
                 }
 
