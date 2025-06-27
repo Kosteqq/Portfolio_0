@@ -16,17 +16,12 @@ namespace ProjectPortfolio.Features.Combat
         {
             Vector2 delta = transform.position.GetXZ() - p_ray.Origin;
             float deltaSquareLenght = Vector2.Dot(delta, delta);
-            
-            // is inside
-            if (deltaSquareLenght < _radius * _radius)
+            bool isInside = deltaSquareLenght < _radius * _radius;
+
+            if (isInside)
             {
-                p_hit = new HitResult
-                {
-                    Position = transform.position.GetXZ() + (p_ray.Origin - transform.position.GetXZ()).normalized * _radius * 1.01f,
-                    Normal = (p_ray.Origin - transform.position.GetXZ()).normalized,
-                    Distance = 0f,
-                };
-                return true;
+                p_hit = default;
+                return false;
             }
 
             float tca = Vector2.Dot(p_ray.Direction, delta);
@@ -57,21 +52,6 @@ namespace ProjectPortfolio.Features.Combat
 
             float distToIntersect = t0 >= 0f ? t0 : t1;
             Vector2 intersect = p_ray.Origin + p_ray.Direction * distToIntersect;
-            
-            
-            delta = p_ray.Origin - transform.position.GetXZ();
-            bool fromInside = deltaSquareLenght < _radius * _radius;
-            if (fromInside)
-            {
-                p_hit = new HitResult
-                {
-                    Position = transform.position.GetXZ() + _radius * 1.05f * delta.normalized,
-                    OutDirection = p_ray.Direction,
-                    Normal = delta.normalized,
-                    Distance = distToIntersect,
-                };
-                return true;
-            }
 
             Vector2 normal = (intersect - transform.position.GetXZ()).normalized;
             p_hit = new HitResult

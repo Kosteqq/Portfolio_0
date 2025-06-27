@@ -40,7 +40,7 @@ Material:
     m_Floats:
     - _Alpha: 1
     - _Background_Width: 0.021
-    - _Bright: 9.7
+    - _Bright: 20
     - _Float: 1
     - _Lines_Dist: 0.032
     - _Lines_Width: 0.051

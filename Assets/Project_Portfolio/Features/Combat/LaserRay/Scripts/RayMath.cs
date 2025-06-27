@@ -8,7 +8,7 @@ namespace ProjectPortfolio.Features.Combat
         {
             float angle = (1f + Vector2.Dot(p_normal, p_direction)) * 90f;
 
-            if (angle < 25f)
+            if (angle < 17f)
             {
                 p_outDirection = default;
                 return false;
