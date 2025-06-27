@@ -8,5 +8,6 @@ namespace ProjectPortfolio.Gameplay.Units
         
         bool CanAttack(Vector2 p_targetPosition);
         void Attack(Vector2 p_targetPosition);
+        void CancelAttack();
     }
 }

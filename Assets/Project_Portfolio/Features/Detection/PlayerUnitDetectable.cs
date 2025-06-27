@@ -7,8 +7,10 @@ namespace ProjectPortfolio.Features.Detection
     {
         public bool TryGetTarget(out GameObject p_target)
         {
-            p_target = null;
-            return false;
+            // HACKME: Temp solution just for testing
+            var playerUnit = FindAnyObjectByType<PlayerUnit>();
+            p_target = playerUnit.gameObject;
+            return true;
         }
     }
 }

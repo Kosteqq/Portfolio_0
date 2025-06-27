@@ -86,5 +86,10 @@ namespace ProjectPortfolio.Features.Combat
         {
             
         }
+
+        public void CancelAttack()
+        {
+            
+        }
     }
 }
