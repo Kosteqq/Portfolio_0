@@ -1,36 +1,30 @@
 using ProjectPortfolio.Global;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace ProjectPortfolio.Gameplay.UI
+namespace ProjectPortfolio.UI
 {
     public class LoadingPanel : MonoBehaviour
     {
         [SerializeField] private CanvasGroup _contentGroup;
-        [SerializeField] private Image _progressImage;
         [SerializeField] private float _fadeOutTime;
         [SerializeField] private float _blockInteractionThreshold = 0.15f;
         
-        private GameManager _gameManager;
+        private SceneManager _sceneManager;
         
         private void Start()
         {
-            _gameManager = GameRegistry.Instance.Get<GameManager>();
-            _gameManager.OnStateChanged += HandleChangedState;
+            _sceneManager = GameRegistry.Instance.Get<SceneManager>();
+            _sceneManager.OnSceneLoading += HandleLoadingScene;
+            gameObject.SetActive(false);
         }
 
         private void Update()
         {
-            _progressImage.fillAmount
-                = Mathf.Lerp(_progressImage.fillAmount, _gameManager.LoadingSceneProgress, Time.unscaledDeltaTime);
-
             _contentGroup.blocksRaycasts = _contentGroup.alpha > _blockInteractionThreshold;
             
-            bool shouldUnload = _gameManager.LoadingSceneProgress >= 1f && _progressImage.fillAmount > 0.8f;
-            
-            if (shouldUnload)
+            if (!_sceneManager.IsLoading)
             {
-                _contentGroup.alpha -= 1f / _fadeOutTime * Time.unscaledDeltaTime;
+                TickFadeOut();
             }
             
             if (_contentGroup.alpha <= 0f)
@@ -39,14 +33,28 @@ namespace ProjectPortfolio.Gameplay.UI
             }
         }
 
-        private void HandleChangedState(GameState p_newState)
+        private void TickFadeOut()
         {
-            if (p_newState == GameState.Loading)
+            _contentGroup.alpha -= 1f / _fadeOutTime * Time.unscaledDeltaTime;
+        }
+
+        private void HandleLoadingScene()
+        {
+            if (_sceneManager.IsLoading)
             {
                 gameObject.SetActive(true);
                 _contentGroup.alpha = 1f;
-                _progressImage.fillAmount = 0f;
             }
+        }
+
+        public void EnableInteraction()
+        {
+            
+        }
+
+        public void DisableInteraction()
+        {
+            
         }
     }
 }

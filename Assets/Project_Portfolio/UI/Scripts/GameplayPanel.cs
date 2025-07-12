@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ProjectPortfolio.Gameplay.UI
+namespace ProjectPortfolio.UI
 {
     public class GameplayPanel : MonoBehaviour
     {

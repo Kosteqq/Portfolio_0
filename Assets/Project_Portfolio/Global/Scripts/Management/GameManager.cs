@@ -1,25 +1,20 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace ProjectPortfolio.Global
 {
     public enum GameState : byte
     {
-        MainMenu, Loading, Gameplay
+        MainMenu, Gameplay
     }
-    
+
     public class GameManager : MonoBehaviour
     {
-        [SerializeField] private string _mainMenuSceneName;
-        [SerializeField] private string _gameplaySceneName;
+        private SceneManager _sceneManager;
+        private GameState _desireState;
         
-        private AsyncOperation _loadingSceneOperatioon;
-        private GameState _currentState;
-        
-        public float LoadingSceneProgress => _loadingSceneOperatioon?.progress ?? 1f;
-
-        public event Action<GameState> OnStateChanged; 
+        public GameState DesireState => _desireState;
+        public event Action OnChangingState;
 
         private void Awake()
         {
@@ -28,33 +23,22 @@ namespace ProjectPortfolio.Global
 
         private void Start()
         {
-#if UNITY_EDITOR
-            _currentState = SceneManager.GetActiveScene().name == _mainMenuSceneName
-                ? GameState.MainMenu
-                : GameState.Gameplay;
-#endif
+            _sceneManager = GameRegistry.Instance.Get<SceneManager>();
+            _desireState = _sceneManager.GetLoadedState();
         }
 
         public void EnterMainMenu()
         {
-            OnStateChanged?.Invoke(GameState.Loading);
-            
-            _loadingSceneOperatioon = SceneManager.LoadSceneAsync(_mainMenuSceneName, LoadSceneMode.Single);
-            _loadingSceneOperatioon.completed += _ =>
-            {
-                OnStateChanged?.Invoke(GameState.MainMenu);
-            };
+            _desireState = GameState.MainMenu;
+            _sceneManager.LoadScene(GameState.MainMenu);
+            OnChangingState?.Invoke();
         }
         
         public void EnterNewGame()
         {
-            OnStateChanged?.Invoke(GameState.Loading);
-
-            _loadingSceneOperatioon = SceneManager.LoadSceneAsync(_gameplaySceneName, LoadSceneMode.Single);
-            _loadingSceneOperatioon.completed += _ =>
-            {
-                OnStateChanged?.Invoke(GameState.Gameplay);
-            };
+            _desireState = GameState.Gameplay;
+            _sceneManager.LoadScene(GameState.Gameplay);
+            OnChangingState?.Invoke();
         }
 
         public void Quit()

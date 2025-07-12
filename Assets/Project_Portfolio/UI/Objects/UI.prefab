@@ -754,8 +754,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _contentGroup: {fileID: 5667724163751213652}
-  _progressImage: {fileID: 1248967581187411886}
-  _fadeOutTime: 2
+  _fadeOutTime: 1.5
   _blockInteractionThreshold: 0.15
 --- !u!225 &5667724163751213652
 CanvasGroup:
@@ -1158,7 +1157,7 @@ GameObject:
   - component: {fileID: 3324367057036546914}
   - component: {fileID: 2804781228207403373}
   - component: {fileID: 1248967581187411886}
-  - component: {fileID: 1595419226344750565}
+  - component: {fileID: 7331382084698162224}
   m_Layer: 0
   m_Name: Progress
   m_TagString: Untagged
@@ -1223,7 +1222,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1595419226344750565
+--- !u!114 &7331382084698162224
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1232,10 +1231,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 6334899639827977719}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Script: {fileID: 11500000, guid: c619aabc14a74552ab60ab23968fe2a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ShowMaskGraphic: 1
+  _updateProgress:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1248967581187411886}
+        m_TargetAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
+        m_MethodName: set_fillAmount
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &7752745462965997922
 GameObject:
   m_ObjectHideFlags: 0

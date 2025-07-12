@@ -2,7 +2,7 @@ using ProjectPortfolio.Global;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectPortfolio.Gameplay.UI
+namespace ProjectPortfolio.UI
 {
     public class MainMenuPanel : MonoBehaviour
     {
@@ -14,15 +14,16 @@ namespace ProjectPortfolio.Gameplay.UI
         private void Start()
         {
             _gameManager = GameRegistry.Instance.Get<GameManager>();
-            _gameManager.OnStateChanged += HandleChangedState;
+            _gameManager.OnChangingState += HandleDesireChangingState;
+            HandleDesireChangingState();
             
             _newGameButton.onClick.AddListener(_gameManager.EnterNewGame);
             _exitButton.onClick.AddListener(_gameManager.Quit);
         }
 
-        private void HandleChangedState(GameState p_newState)
+        private void HandleDesireChangingState()
         {
-            gameObject.SetActive(p_newState == GameState.MainMenu);
+            gameObject.SetActive(_gameManager.DesireState == GameState.MainMenu);
         }
     }
 }
