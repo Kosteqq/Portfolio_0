@@ -11,17 +11,11 @@ namespace ProjectPortfolio.Gameplay.Interaction
     {
         const int MAX_SEARCH_RANGE = 5;
         
-        private InteractionInput _interactionInput;
-        
         internal readonly List<PlayerUnit> SelectedUnits = new();
-        internal InteractionInput Input => _interactionInput;
         
         private void Awake()
         {
-            _interactionInput = new InteractionInput();
-            _interactionInput.Enable();
-            _interactionInput.UnitsManagement.SetPosition.performed += SetUnitsPosition;
-            _interactionInput.UnitsManagement.ToggleModes.performed += ToggleModes;
+            
         }
 
         private void ToggleModes(InputAction.CallbackContext p_obj)

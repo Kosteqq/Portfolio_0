@@ -1,16 +1,19 @@
-using System.Collections.Generic;
+using ProjectPortfolio.Gameplay.Interaction;
 using ProjectPortfolio.Gameplay.Units;
+using ProjectPortfolio.Global;
+using ProjectPortfolio.Global.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
-namespace ProjectPortfolio.Gameplay.Interaction
+namespace ProjectPortfolio.UI
 {
-    public class InteractionSelection : MonoBehaviour
+    public class UnitsSelectionBox : MonoBehaviour
     {
         [SerializeField] private Image _selectionImage;
         
+        private InputManager _inputManager;
         private InteractionGameplay _interaction;
         
         private bool _isSelecting;
@@ -20,8 +23,10 @@ namespace ProjectPortfolio.Gameplay.Interaction
         private void Start()
         {
             _interaction = FindAnyObjectByType<InteractionGameplay>();
-            _interaction.Input.UnitsManagement.Selecting.started += StartSelecting;
-            _interaction.Input.UnitsManagement.Selecting.canceled += FinishSelecting;
+
+            _inputManager = GameRegistry.Instance.Get<InputManager>();
+            _inputManager.GameplayMap.Selection.started += StartSelecting;
+            _inputManager.GameplayMap.Selection.canceled += FinishSelecting;
             
             _selectionImage.gameObject.SetActive(false);
         }
