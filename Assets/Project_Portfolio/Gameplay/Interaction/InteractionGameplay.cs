@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ProjectPortfolio.Gameplay.Units;
 using ProjectPortfolio.Global;
+using ProjectPortfolio.Global.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,17 +14,27 @@ namespace ProjectPortfolio.Gameplay.Interaction
         const int MAX_SEARCH_RANGE = 5;
         
         internal readonly List<PlayerUnit> SelectedUnits = new();
+
+        private InputManager _inputManager;
         
-        private void Awake()
+        private void Start()
         {
-            
+            _inputManager = GameRegistry.Instance.Get<InputManager>();
+            _inputManager.GameplayMap.SelectPosition.performed += SetUnitsPosition;
+            _inputManager.GameplayMap.ToggleSiegeMode.performed += ToggleSiegeMode;
         }
 
-        private void ToggleModes(InputAction.CallbackContext p_obj)
+        private void OnDestroy()
+        {
+            _inputManager.GameplayMap.SelectPosition.performed -= SetUnitsPosition;
+            _inputManager.GameplayMap.ToggleSiegeMode.performed -= ToggleSiegeMode;
+        }
+
+        private void ToggleSiegeMode(InputAction.CallbackContext p_obj)
         {
             foreach (PlayerUnit unit in SelectedUnits)
             {
-                unit.ToggleMode();
+                unit.ToggleSiegeMode();
             }
         }
 

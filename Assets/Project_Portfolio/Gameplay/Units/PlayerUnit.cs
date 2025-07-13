@@ -31,7 +31,7 @@ namespace ProjectPortfolio.Gameplay.Units
             // attack?
         }
 
-        public void ToggleMode()
+        public void ToggleSiegeMode()
         {
             if (_desiredMode == UnitState.MOVE)
             {

@@ -37,6 +37,24 @@ namespace ProjectPortfolio.Global.Input.Internal
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectPosition"",
+                    ""type"": ""Button"",
+                    ""id"": ""ee8024c8-46fa-4f7a-aef1-99df83579560"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleSiegeMode"",
+                    ""type"": ""Button"",
+                    ""id"": ""4d4d32ff-cc31-4c10-b8ad-7f6bd98b69d5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -48,6 +66,28 @@ namespace ProjectPortfolio.Global.Input.Internal
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Selection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dac9fa99-44d2-48ba-9b11-88a5183b7e75"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5875b653-4c80-4483-885f-417557e652e5"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleSiegeMode"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -636,6 +676,8 @@ namespace ProjectPortfolio.Global.Input.Internal
             // Gameplay
             m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
             m_Gameplay_Selection = m_Gameplay.FindAction("Selection", throwIfNotFound: true);
+            m_Gameplay_SelectPosition = m_Gameplay.FindAction("SelectPosition", throwIfNotFound: true);
+            m_Gameplay_ToggleSiegeMode = m_Gameplay.FindAction("ToggleSiegeMode", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -716,11 +758,15 @@ namespace ProjectPortfolio.Global.Input.Internal
         private readonly InputActionMap m_Gameplay;
         private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
         private readonly InputAction m_Gameplay_Selection;
+        private readonly InputAction m_Gameplay_SelectPosition;
+        private readonly InputAction m_Gameplay_ToggleSiegeMode;
         public struct GameplayActions
         {
             private @GameInputActions m_Wrapper;
             public GameplayActions(@GameInputActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Selection => m_Wrapper.m_Gameplay_Selection;
+            public InputAction @SelectPosition => m_Wrapper.m_Gameplay_SelectPosition;
+            public InputAction @ToggleSiegeMode => m_Wrapper.m_Gameplay_ToggleSiegeMode;
             public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -733,6 +779,12 @@ namespace ProjectPortfolio.Global.Input.Internal
                 @Selection.started += instance.OnSelection;
                 @Selection.performed += instance.OnSelection;
                 @Selection.canceled += instance.OnSelection;
+                @SelectPosition.started += instance.OnSelectPosition;
+                @SelectPosition.performed += instance.OnSelectPosition;
+                @SelectPosition.canceled += instance.OnSelectPosition;
+                @ToggleSiegeMode.started += instance.OnToggleSiegeMode;
+                @ToggleSiegeMode.performed += instance.OnToggleSiegeMode;
+                @ToggleSiegeMode.canceled += instance.OnToggleSiegeMode;
             }
 
             private void UnregisterCallbacks(IGameplayActions instance)
@@ -740,6 +792,12 @@ namespace ProjectPortfolio.Global.Input.Internal
                 @Selection.started -= instance.OnSelection;
                 @Selection.performed -= instance.OnSelection;
                 @Selection.canceled -= instance.OnSelection;
+                @SelectPosition.started -= instance.OnSelectPosition;
+                @SelectPosition.performed -= instance.OnSelectPosition;
+                @SelectPosition.canceled -= instance.OnSelectPosition;
+                @ToggleSiegeMode.started -= instance.OnToggleSiegeMode;
+                @ToggleSiegeMode.performed -= instance.OnToggleSiegeMode;
+                @ToggleSiegeMode.canceled -= instance.OnToggleSiegeMode;
             }
 
             public void RemoveCallbacks(IGameplayActions instance)
@@ -923,6 +981,8 @@ namespace ProjectPortfolio.Global.Input.Internal
         public interface IGameplayActions
         {
             void OnSelection(InputAction.CallbackContext context);
+            void OnSelectPosition(InputAction.CallbackContext context);
+            void OnToggleSiegeMode(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {
