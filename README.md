@@ -1,5 +1,5 @@
 # Project Portfolio #0
-___
+
 ![CI](https://badgen.net/badge/License/MIT/blue)
 ![CI](https://badgen.net/badge/Unity/6000.0.33f1/blue)
 ![CI](https://badgen.net/badge/Status/Pre-Production/yellow)
@@ -13,7 +13,7 @@ Areas for potential future optimization and improvements include pathfinding alg
 
 
 ## Usage
-___
+
 The project requires Unity Editor version `6000.0.33f1` to be installed.
 
 In the Scenes/ directory, you will find [`Gameplay_Scene`](`Assets/Project_Portfolio/Scenes/Gameplay_Scene.unity`) and
@@ -21,7 +21,7 @@ In the Scenes/ directory, you will find [`Gameplay_Scene`](`Assets/Project_Portf
 
 
 ## Project Structure
-___
+
 *Some of those directories are split into two subdirectories: `objects` (for strictly related assets) and `scripts`, to help maintain order within a given feature.*
 
 - [`Global`](`Assets/Project_Portfolio/Global`): Contains core game assets accessible from any part of the game.
@@ -39,7 +39,6 @@ ___
 
 
 ## Registry
-___
 
 The Registry system serves as a foundational element for managing and accessing various game systems and data.
 It operates on a base `Registry` class, specific registry implementations provide specialized management for different scopes within the project.
