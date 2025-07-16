@@ -4,7 +4,7 @@ namespace ProjectPortfolio.Global
 {
     public class GameInstaller
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Install()
         {
             GameRegistry.Initialize();
