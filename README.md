@@ -16,22 +16,22 @@ Areas for potential future optimization and improvements include pathfinding alg
 
 The project requires Unity Editor version `6000.0.33f1` to be installed.
 
-In the Scenes/ directory, you will find [`Gameplay_Scene`](`Assets/Project_Portfolio/Scenes/Gameplay_Scene.unity`) and
-[`Main_Menu_Scene`](`Assets/Project_Portfolio/Scenes/Main_Menu_Scene.unity`). The project can be run from either of these scenes.
+In the Scenes/ directory, you will find [`Gameplay_Scene`](Assets/Project_Portfolio/Scenes/Gameplay_Scene.unity) and
+[`Main_Menu_Scene`](Assets/Project_Portfolio/Scenes/Main_Menu_Scene.unity). The project can be run from either of these scenes.
 
 
 ## Project Structure
 
 *Some of those directories are split into two subdirectories: `objects` (for strictly related assets) and `scripts`, to help maintain order within a given feature.*
 
-- [`Global`](`Assets/Project_Portfolio/Global`): Contains core game assets accessible from any part of the game.
+- [`Global`](Assets/Project_Portfolio/Global): Contains core game assets accessible from any part of the game.
   By default, its assets should be implemented through game functions.
-- [`Gameplay`](`Assets/Project_Portfolio/Gameplay`)
-  - [`Core`](`Assets/Project_Portfolio/Gameplay/Core`): Contains the main managers and behavior for the entire gameplay.
-    It contains interfaces definitions which implementations are located in the [`Features/`](`Assets/Project_Portfolio/Features`) directory. 
-  - [`UI`](`Assets/Project_Portfolio/Gameplay/UI`):
-  - [`Units`](`Assets/Project_Portfolio/Gameplay/Units`): Contains base classes. Uses `Features` interfaces to implement unit's behaviour 
-  - [`Features`](`Assets/Project_Portfolio/Gameplay/Features`): Contains game interface implementations.
+- [`Gameplay`](Assets/Project_Portfolio/Gameplay)
+  - [`Core`](Assets/Project_Portfolio/Gameplay/Core): Contains the main managers and behavior for the entire gameplay.
+    It contains interfaces definitions which implementations are located in the [`Features/`](Assets/Project_Portfolio/Features) directory. 
+  - [`UI`](Assets/Project_Portfolio/Gameplay/UI):
+  - [`Units`](Assets/Project_Portfolio/Gameplay/Units): Contains base classes. Uses `Features` interfaces to implement unit's behaviour 
+  - [`Features`](Assets/Project_Portfolio/Gameplay/Features): Contains game interface implementations.
 - `GFX`: Graphcs assets
   - `Materials`: Contains shaders, mater materials and material instances
   - `Models` 
