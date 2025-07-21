@@ -46,8 +46,9 @@ In the Scenes/ directory, you will find [`Gameplay_Scene`](Assets/Project_Portfo
 - Cleanup shaders and materials
 - Code & files general cleanup
 
+## Key Features
 
-## Registry
+### Registry
 
 The Registry system serves as a foundational element for managing and accessing various game systems and data.
 It operates on a base `Registry` class, specific registry implementations provide specialized management for different scopes within the project.
@@ -61,8 +62,6 @@ It operates on a base `Registry` class, specific registry implementations provid
   and the registry is added to `GameRegistry`.
   - [`SceneRegistryContainer`](`Assets/Project_Portfolio/Gameplay/Manager/SceneRegistryContainer.cs`):
     This class extends `MonoBehaviour` and its purpose is managing `SceneRegistry` lifecycle
-
-## Key Features
 
 ### D* Lite Pathfinding
 
