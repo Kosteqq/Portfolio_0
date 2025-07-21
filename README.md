@@ -2,7 +2,7 @@
 
 ![CI](https://badgen.net/badge/License/MIT/blue)
 ![CI](https://badgen.net/badge/Unity/6000.0.33f1/blue)
-![CI](https://badgen.net/badge/Status/Pre-Production/yellow)
+![CI](https://badgen.net/badge/Status/In%20Progress/yellow)
 [![CI](https://badgen.net/badge/LinkedIn/Konstanty%20Karczymarzyk/green)](https://linkedin.com/in/konstanty-karczymarzyk-a58625239)
 
 An RTS/Tower Defense game project focused on maximum unit modularity, allowing for easy expansion of unit components and game features during the production phase.
@@ -10,7 +10,6 @@ This project served as an initial exploration of game mechanics, with particular
 
 It's still in a pre-production state, with potential problems that were not detected during small-scale testing.
 Areas for potential future optimization and improvements include pathfinding algorithms, rendering performance and reference handling.
-
 
 ## Usage
 
@@ -22,7 +21,7 @@ In the Scenes/ directory, you will find [`Gameplay_Scene`](Assets/Project_Portfo
 
 ## Project Structure
 
-*Some of those directories are split into two subdirectories: `objects` (for strictly related assets) and `scripts`, to help maintain order within a given feature.*
+*The main goal was to keep files related to systems closed together, that's why some of those directories are split into two subdirectories: `objects` (for strictly related assets) and `scripts`.*
 
 - [`Global`](Assets/Project_Portfolio/Global): Contains core game assets accessible from any part of the game.
   By default, its assets should be implemented through game functions.
@@ -36,6 +35,14 @@ In the Scenes/ directory, you will find [`Gameplay_Scene`](Assets/Project_Portfo
   - `Materials`: Contains shaders, mater materials and material instances
   - `Models` 
 - `Scenes`
+
+
+## TODO
+
+- Move Pathfinding to `Gameplay` & move `UnitPathfinder.cs` logic into `Movement`
+- Drone like Movement chassis
+- Cleanup shaders and materials
+- Code & files general cleanup
 
 
 ## Registry
@@ -53,3 +60,8 @@ It operates on a base `Registry` class, specific registry implementations provid
   - [`SceneRegistryContainer`](`Assets/Project_Portfolio/Gameplay/Manager/SceneRegistryContainer.cs`):
     This class extends `MonoBehaviour` and its purpose is managing `SceneRegistry` lifecycle
 
+## Key Features
+
+### D* Lite Pathfinding
+
+### Combat
