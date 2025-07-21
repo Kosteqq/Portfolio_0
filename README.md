@@ -5,6 +5,8 @@
 ![CI](https://badgen.net/badge/Status/In%20Progress/yellow)
 [![CI](https://badgen.net/badge/LinkedIn/Konstanty%20Karczymarzyk/green)](https://linkedin.com/in/konstanty-karczymarzyk-a58625239)
 
+![CI](Assets/Screenshots/Screenshot_1.png)
+
 An RTS/Tower Defense game project focused on maximum unit modularity, allowing for easy expansion of unit components and game features during the production phase.
 This project served as an initial exploration of game mechanics, with particular emphasis on demonstrating a scalable and modular unit architecture.
 
